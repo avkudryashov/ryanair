@@ -1,0 +1,202 @@
+{
+  "termsOfUse": "https://www.ryanair.com/ie/en/corporate/terms-of-use=AGREED",
+  "currency": "EUR",
+  "currPrecision": 2,
+  "routeGroup": "ETHNIC",
+  "tripType": "OTHER",
+  "upgradeType": "PLUS",
+  "trips": [
+    {
+      "origin": "VLC",
+      "originName": "Valencia",
+      "destination": "RAK",
+      "destinationName": "Marrakesh",
+      "isSpanishDomestic": false,
+      "minDepartureTime": 150,
+      "minConnectionTime": 60,
+      "routeGroup": "ETHNIC",
+      "tripType": "OTHER",
+      "upgradeType": "PLUS",
+      "dates": [
+        {
+          "dateOut": "2026-05-18T00:00:00.000",
+          "flights": [
+            {
+              "faresLeft": -1,
+              "flightKey": "FR~5035~ ~~VLC~05/18/2026 06:05~RAK~05/18/2026 07:10~~",
+              "infantsLeft": 18,
+              "regularFare": {
+                "fareKey": "ARTBT4VVBX7TVQ3YS45WJETOIGUTMQDVAW5ML37F2ZXEWM652XJXTD56ZL7YBZUWCYLIOHS4AJSBYBJKAWP4TGY7X5QDO32FKHVGTFRYNMGS7EQ5L3T4AITIRJQ4T6CJIAXHFYL2N7XH6XSPK5FPGVYTPXZ3H6TOEKZVY26QKKCLPJXJVUUGI4LS6PXA3QNVFE5Y2MGAGNWJCY7WNGW25LIGZ6NGTFPQEN5XV2DXLFSTDSAPFMMNDYJY7PRJX2QLCDADZUJYYJ2KSUP33VT75LZBV7NA2PAFCLAPMDED7EDBHMW235KQ",
+                "fares": [
+                  {
+                    "type": "ADT",
+                    "amount": 41.99,
+                    "count": 1,
+                    "hasDiscount": false,
+                    "publishedFare": 41.99,
+                    "discountInPercent": 0,
+                    "hasPromoDiscount": false,
+                    "discountAmount": 0.0,
+                    "hasBogof": false,
+                    "isPrime": false
+                  }
+                ]
+              },
+              "operatedBy": "",
+              "segments": [
+                {
+                  "segmentNr": 0,
+                  "origin": "VLC",
+                  "destination": "RAK",
+                  "flightNumber": "FR 5035",
+                  "time": [
+                    "2026-05-18T06:05:00.000",
+                    "2026-05-18T07:10:00.000"
+                  ],
+                  "timeUTC": [
+                    "2026-05-18T04:05:00.000Z",
+                    "2026-05-18T06:10:00.000Z"
+                  ],
+                  "duration": "02:05"
+                }
+              ],
+              "isSSIMLoad": false,
+              "flightNumber": "FR 5035",
+              "time": [
+                "2026-05-18T06:05:00.000",
+                "2026-05-18T07:10:00.000"
+              ],
+              "timeUTC": [
+                "2026-05-18T04:05:00.000Z",
+                "2026-05-18T06:10:00.000Z"
+              ],
+              "duration": "02:05"
+            },
+            {
+              "faresLeft": 5,
+              "flightKey": "FR~2216~ ~~VLC~05/18/2026 21:20~RAK~05/18/2026 22:25~~",
+              "infantsLeft": 18,
+              "regularFare": {
+                "fareKey": "LUSGQBMMMJ6BNOSTRU7SUY3LPEEFP2RBHMSFNQO3CUWP4FL3LLUZ3MHPY6KQ6FWWYI44IQGWVRJT74USTRBOMROGHYZYOYFP54F27BZNEAFVD3ICQ3XZCT4KL5WBZHYTTKT4M2BAZW2K6VGL52USPUVRD4NFMS5MMVDG3RBCET75PN64OPBWDSYMWTOJ5H4SQTNOVKKBND65M7CT2VXVAJOHSGQIJQR6LVXVND6LRB5LJKTGFID4ECLWHJJBWGLV3R3HCGVJKUSNQXB5SU2YBWIPMJAMKM52FFZI6TJD4PU7GEHOR6RSHTHCKOBM2KM5KB222TO2QJWLE",
+                "fares": [
+                  {
+                    "type": "ADT",
+                    "amount": 15.0,
+                    "count": 1,
+                    "hasDiscount": true,
+                    "publishedFare": 19.99,
+                    "discountInPercent": 0,
+                    "hasPromoDiscount": false,
+                    "discountAmount": 4.99,
+                    "hasBogof": false,
+                    "isPrime": false
+                  }
+                ]
+              },
+              "operatedBy": "",
+              "segments": [
+                {
+                  "segmentNr": 0,
+                  "origin": "VLC",
+                  "destination": "RAK",
+                  "flightNumber": "FR 2216",
+                  "time": [
+                    "2026-05-18T21:20:00.000",
+                    "2026-05-18T22:25:00.000"
+                  ],
+                  "timeUTC": [
+                    "2026-05-18T19:20:00.000Z",
+                    "2026-05-18T21:25:00.000Z"
+                  ],
+                  "duration": "02:05"
+                }
+              ],
+              "isSSIMLoad": false,
+              "flightNumber": "FR 2216",
+              "time": [
+                "2026-05-18T21:20:00.000",
+                "2026-05-18T22:25:00.000"
+              ],
+              "timeUTC": [
+                "2026-05-18T19:20:00.000Z",
+                "2026-05-18T21:25:00.000Z"
+              ],
+              "duration": "02:05"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "origin": "RAK",
+      "originName": "Marrakesh",
+      "destination": "VLC",
+      "destinationName": "Valencia",
+      "isSpanishDomestic": false,
+      "minDepartureTime": 150,
+      "minConnectionTime": 60,
+      "routeGroup": "ETHNIC",
+      "tripType": "OTHER",
+      "upgradeType": "PLUS",
+      "dates": [
+        {
+          "dateOut": "2026-05-20T00:00:00.000",
+          "flights": [
+            {
+              "faresLeft": 5,
+              "flightKey": "FR~2217~ ~~RAK~05/20/2026 12:30~VLC~05/20/2026 15:25~~",
+              "infantsLeft": 18,
+              "regularFare": {
+                "fareKey": "LUSGQBMMMJ6BNOSTRU7SUY3LPEEFP2RBHMSFNQO3CUWP4FL3LLUV7KR5J424GBNPTFZFMPY3BQLAJI3G3ZS2NUVB4G7JHIV2XHPYGKMBMRCLOYUPMCNFQDIFRFUA3DJWDRUHBM4DVHR3TKLJ55PJSFUDSAKEHQANFPVKUQ3B5GR7EFK53M2G37LHSLPU47GFQ7QJZKIMJA34NLN5HIKGMQAM6YEVPKIBH6DXSTOV5IWCMSSQMMVT5WI3SFOD3DLIII5DXGZ2D6DXTRRJKA5DVNYLRHQTJHGDIEY6IMXUSKYKQKYJE2FJA32TMMLROHS4ZI4INJGHQ63RK",
+                "fares": [
+                  {
+                    "type": "ADT",
+                    "amount": 21.0,
+                    "count": 1,
+                    "hasDiscount": false,
+                    "publishedFare": 21.0,
+                    "discountInPercent": 0,
+                    "hasPromoDiscount": false,
+                    "discountAmount": 0.0,
+                    "hasBogof": false,
+                    "isPrime": false
+                  }
+                ]
+              },
+              "operatedBy": "",
+              "segments": [
+                {
+                  "segmentNr": 0,
+                  "origin": "RAK",
+                  "destination": "VLC",
+                  "flightNumber": "FR 2217",
+                  "time": [
+                    "2026-05-20T12:30:00.000",
+                    "2026-05-20T15:25:00.000"
+                  ],
+                  "timeUTC": [
+                    "2026-05-20T11:30:00.000Z",
+                    "2026-05-20T13:25:00.000Z"
+                  ],
+                  "duration": "01:55"
+                }
+              ],
+              "isSSIMLoad": false,
+              "flightNumber": "FR 2217",
+              "time": [
+                "2026-05-20T12:30:00.000",
+                "2026-05-20T15:25:00.000"
+              ],
+              "timeUTC": [
+                "2026-05-20T11:30:00.000Z",
+                "2026-05-20T13:25:00.000Z"
+              ],
+              "duration": "01:55"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "serverTimeUTC": "2026-01-16T16:22:41.553Z"
+}

@@ -1,0 +1,2617 @@
+{
+  "arrivalAirportCategories": null,
+  "fares": [
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Morocco",
+          "iataCode": "RAK",
+          "name": "Marrakesh",
+          "seoName": "marrakesh",
+          "city": {
+            "name": "Marrakesh",
+            "code": "MARRAKESH",
+            "countryCode": "ma"
+          }
+        },
+        "departureDate": "2026-05-18T21:20:00",
+        "arrivalDate": "2026-05-18T22:25:00",
+        "price": {
+          "value": 14.99,
+          "valueMainUnit": "14",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~2216~ ~~VLC~05/18/2026 21:20~RAK~05/18/2026 22:25~~",
+        "flightNumber": "FR2216",
+        "previousPrice": null,
+        "priceUpdated": 1768576317000
+      },
+      "summary": {
+        "price": {
+          "value": 14.99,
+          "valueMainUnit": "14",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Morocco",
+          "iataCode": "TNG",
+          "name": "Tangier",
+          "seoName": "tangier",
+          "city": {
+            "name": "Tangier",
+            "code": "TANGIER",
+            "countryCode": "ma"
+          }
+        },
+        "departureDate": "2026-05-19T15:25:00",
+        "arrivalDate": "2026-05-19T15:55:00",
+        "price": {
+          "value": 16.99,
+          "valueMainUnit": "16",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~5539~ ~~VLC~05/19/2026 15:25~TNG~05/19/2026 15:55~~",
+        "flightNumber": "FR5539",
+        "previousPrice": null,
+        "priceUpdated": 1768560298000
+      },
+      "summary": {
+        "price": {
+          "value": 16.99,
+          "valueMainUnit": "16",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Spain",
+          "iataCode": "PMI",
+          "name": "Palma de Mallorca",
+          "seoName": "palma-mallorca",
+          "city": {
+            "name": "Palma",
+            "code": "PALMA",
+            "countryCode": "es"
+          }
+        },
+        "departureDate": "2026-05-19T05:45:00",
+        "arrivalDate": "2026-05-19T06:45:00",
+        "price": {
+          "value": 19.14,
+          "valueMainUnit": "19",
+          "valueFractionalUnit": "14",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~7372~ ~~VLC~05/19/2026 05:45~PMI~05/19/2026 06:45~~",
+        "flightNumber": "FR7372",
+        "previousPrice": null,
+        "priceUpdated": 1768560293000
+      },
+      "summary": {
+        "price": {
+          "value": 19.14,
+          "valueMainUnit": "19",
+          "valueFractionalUnit": "14",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Spain",
+          "iataCode": "IBZ",
+          "name": "Ibiza",
+          "seoName": "ibiza",
+          "city": {
+            "name": "Ibiza",
+            "code": "IBIZA",
+            "countryCode": "es"
+          }
+        },
+        "departureDate": "2026-05-18T15:15:00",
+        "arrivalDate": "2026-05-18T16:05:00",
+        "price": {
+          "value": 19.35,
+          "valueMainUnit": "19",
+          "valueFractionalUnit": "35",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1698~ ~~VLC~05/18/2026 15:15~IBZ~05/18/2026 16:05~~",
+        "flightNumber": "FR1698",
+        "previousPrice": null,
+        "priceUpdated": 1768560289000
+      },
+      "summary": {
+        "price": {
+          "value": 19.35,
+          "valueMainUnit": "19",
+          "valueFractionalUnit": "35",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Morocco",
+          "iataCode": "FEZ",
+          "name": "Fez",
+          "seoName": "fez",
+          "city": {
+            "name": "Fez",
+            "code": "FEZ",
+            "countryCode": "ma"
+          }
+        },
+        "departureDate": "2026-05-19T08:45:00",
+        "arrivalDate": "2026-05-19T09:15:00",
+        "price": {
+          "value": 21.99,
+          "valueMainUnit": "21",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~5373~ ~~VLC~05/19/2026 08:45~FEZ~05/19/2026 09:15~~",
+        "flightNumber": "FR5373",
+        "previousPrice": null,
+        "priceUpdated": 1768575871000
+      },
+      "summary": {
+        "price": {
+          "value": 21.99,
+          "valueMainUnit": "21",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Spain",
+          "iataCode": "SVQ",
+          "name": "Seville",
+          "seoName": "seville",
+          "city": {
+            "name": "Seville",
+            "code": "SEVILLE",
+            "countryCode": "es"
+          }
+        },
+        "departureDate": "2026-05-19T23:05:00",
+        "arrivalDate": "2026-05-20T00:20:00",
+        "price": {
+          "value": 22.95,
+          "valueMainUnit": "22",
+          "valueFractionalUnit": "95",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~2207~ ~~VLC~05/19/2026 23:05~SVQ~05/20/2026 00:20~~",
+        "flightNumber": "FR2207",
+        "previousPrice": null,
+        "priceUpdated": 1768560291000
+      },
+      "summary": {
+        "price": {
+          "value": 22.95,
+          "valueMainUnit": "22",
+          "valueFractionalUnit": "95",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Spain",
+          "iataCode": "AGP",
+          "name": "Malaga",
+          "seoName": "malaga",
+          "city": {
+            "name": "Malaga",
+            "code": "MALAGA",
+            "countryCode": "es"
+          }
+        },
+        "departureDate": "2026-05-18T22:15:00",
+        "arrivalDate": "2026-05-18T23:35:00",
+        "price": {
+          "value": 24.05,
+          "valueMainUnit": "24",
+          "valueFractionalUnit": "05",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~ 680~ ~~VLC~05/18/2026 22:15~AGP~05/18/2026 23:35~~",
+        "flightNumber": "FR680",
+        "previousPrice": null,
+        "priceUpdated": 1768560293000
+      },
+      "summary": {
+        "price": {
+          "value": 24.05,
+          "valueMainUnit": "24",
+          "valueFractionalUnit": "05",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "United Kingdom",
+          "iataCode": "MAN",
+          "name": "Manchester",
+          "seoName": "manchester",
+          "city": {
+            "name": "Manchester",
+            "code": "MANCHESTER",
+            "countryCode": "gb"
+          }
+        },
+        "departureDate": "2026-05-19T09:00:00",
+        "arrivalDate": "2026-05-19T10:40:00",
+        "price": {
+          "value": 24.99,
+          "valueMainUnit": "24",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~ 640~ ~~VLC~05/19/2026 09:00~MAN~05/19/2026 10:40~~",
+        "flightNumber": "FR640",
+        "previousPrice": null,
+        "priceUpdated": 1768578294000
+      },
+      "summary": {
+        "price": {
+          "value": 24.99,
+          "valueMainUnit": "24",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Spain",
+          "iataCode": "MAH",
+          "name": "Menorca",
+          "seoName": "mahon-menorca",
+          "city": {
+            "name": "Menorca",
+            "code": "MENORCA",
+            "countryCode": "es"
+          }
+        },
+        "departureDate": "2026-05-18T05:55:00",
+        "arrivalDate": "2026-05-18T07:05:00",
+        "price": {
+          "value": 26.14,
+          "valueMainUnit": "26",
+          "valueFractionalUnit": "14",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~7401~ ~~VLC~05/18/2026 05:55~MAH~05/18/2026 07:05~~",
+        "flightNumber": "FR7401",
+        "previousPrice": null,
+        "priceUpdated": 1768562129000
+      },
+      "summary": {
+        "price": {
+          "value": 26.14,
+          "valueMainUnit": "26",
+          "valueFractionalUnit": "14",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Portugal",
+          "iataCode": "OPO",
+          "name": "Porto",
+          "seoName": "porto",
+          "city": {
+            "name": "Porto",
+            "code": "PORTO",
+            "countryCode": "pt"
+          }
+        },
+        "departureDate": "2026-05-19T22:30:00",
+        "arrivalDate": "2026-05-19T23:05:00",
+        "price": {
+          "value": 27.99,
+          "valueMainUnit": "27",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~2645~ ~~VLC~05/19/2026 22:30~OPO~05/19/2026 23:05~~",
+        "flightNumber": "FR2645",
+        "previousPrice": null,
+        "priceUpdated": 1768575774000
+      },
+      "summary": {
+        "price": {
+          "value": 27.99,
+          "valueMainUnit": "27",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Portugal",
+          "iataCode": "LIS",
+          "name": "Lisbon",
+          "seoName": "lisbon",
+          "city": {
+            "name": "Lisbon",
+            "code": "LISBON",
+            "countryCode": "pt"
+          }
+        },
+        "departureDate": "2026-05-19T21:20:00",
+        "arrivalDate": "2026-05-19T22:05:00",
+        "price": {
+          "value": 28.94,
+          "valueMainUnit": "28",
+          "valueFractionalUnit": "94",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1769~ ~~VLC~05/19/2026 21:20~LIS~05/19/2026 22:05~~",
+        "flightNumber": "FR1769",
+        "previousPrice": null,
+        "priceUpdated": 1768560294000
+      },
+      "summary": {
+        "price": {
+          "value": 28.94,
+          "valueMainUnit": "28",
+          "valueFractionalUnit": "94",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "United Kingdom",
+          "iataCode": "STN",
+          "name": "London Stansted",
+          "seoName": "london-stansted",
+          "city": {
+            "name": "London",
+            "code": "LONDON",
+            "macCode": "LON",
+            "countryCode": "gb"
+          }
+        },
+        "departureDate": "2026-05-19T11:15:00",
+        "arrivalDate": "2026-05-19T12:45:00",
+        "price": {
+          "value": 30.99,
+          "valueMainUnit": "30",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~ 642~ ~~VLC~05/19/2026 11:15~STN~05/19/2026 12:45~~",
+        "flightNumber": "FR642",
+        "previousPrice": null,
+        "priceUpdated": 1768576592000
+      },
+      "summary": {
+        "price": {
+          "value": 30.99,
+          "valueMainUnit": "30",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Spain",
+          "iataCode": "LPA",
+          "name": "Gran Canaria",
+          "seoName": "gran-canaria",
+          "city": {
+            "name": "Gran Canaria",
+            "code": "GRAN_CANARIA",
+            "countryCode": "es"
+          }
+        },
+        "departureDate": "2026-05-19T14:50:00",
+        "arrivalDate": "2026-05-19T16:55:00",
+        "price": {
+          "value": 33.86,
+          "valueMainUnit": "33",
+          "valueFractionalUnit": "86",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~7202~ ~~VLC~05/19/2026 14:50~LPA~05/19/2026 16:55~~",
+        "flightNumber": "FR7202",
+        "previousPrice": null,
+        "priceUpdated": 1768560293000
+      },
+      "summary": {
+        "price": {
+          "value": 33.86,
+          "valueMainUnit": "33",
+          "valueFractionalUnit": "86",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "TRS",
+          "name": "Trieste",
+          "seoName": "trieste",
+          "city": {
+            "name": "Trieste",
+            "code": "TRIESTE",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-19T21:20:00",
+        "arrivalDate": "2026-05-19T23:35:00",
+        "price": {
+          "value": 33.99,
+          "valueMainUnit": "33",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~ 617~ ~~VLC~05/19/2026 21:20~TRS~05/19/2026 23:35~~",
+        "flightNumber": "FR617",
+        "previousPrice": null,
+        "priceUpdated": 1768560297000
+      },
+      "summary": {
+        "price": {
+          "value": 33.99,
+          "valueMainUnit": "33",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "TSF",
+          "name": "Venice Treviso",
+          "seoName": "venice-treviso",
+          "city": {
+            "name": "Venice",
+            "code": "VENICE",
+            "macCode": "VEN",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-19T16:55:00",
+        "arrivalDate": "2026-05-19T19:05:00",
+        "price": {
+          "value": 33.99,
+          "valueMainUnit": "33",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~7266~ ~~VLC~05/19/2026 16:55~TSF~05/19/2026 19:05~~",
+        "flightNumber": "FR7266",
+        "previousPrice": null,
+        "priceUpdated": 1768560299000
+      },
+      "summary": {
+        "price": {
+          "value": 33.99,
+          "valueMainUnit": "33",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "United Kingdom",
+          "iataCode": "EMA",
+          "name": "East Midlands",
+          "seoName": "east-midlands",
+          "city": {
+            "name": "East Midlands",
+            "code": "EAST_MIDLANDS",
+            "countryCode": "gb"
+          }
+        },
+        "departureDate": "2026-05-18T10:15:00",
+        "arrivalDate": "2026-05-18T11:45:00",
+        "price": {
+          "value": 34.99,
+          "valueMainUnit": "34",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1757~ ~~VLC~05/18/2026 10:15~EMA~05/18/2026 11:45~~",
+        "flightNumber": "FR1757",
+        "previousPrice": null,
+        "priceUpdated": 1768575751000
+      },
+      "summary": {
+        "price": {
+          "value": 34.99,
+          "valueMainUnit": "34",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "United Kingdom",
+          "iataCode": "BRS",
+          "name": "Bristol",
+          "seoName": "bristol",
+          "city": {
+            "name": "Bristol",
+            "code": "BRISTOL",
+            "countryCode": "gb"
+          }
+        },
+        "departureDate": "2026-05-19T10:40:00",
+        "arrivalDate": "2026-05-19T12:10:00",
+        "price": {
+          "value": 37.24,
+          "valueMainUnit": "37",
+          "valueFractionalUnit": "24",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~4441~ ~~VLC~05/19/2026 10:40~BRS~05/19/2026 12:10~~",
+        "flightNumber": "FR4441",
+        "previousPrice": null,
+        "priceUpdated": 1768562035000
+      },
+      "summary": {
+        "price": {
+          "value": 37.24,
+          "valueMainUnit": "37",
+          "valueFractionalUnit": "24",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "France",
+          "iataCode": "MRS",
+          "name": "Marseille",
+          "seoName": "marseille",
+          "city": {
+            "name": "Marseille",
+            "code": "MARSEILLE",
+            "countryCode": "fr"
+          }
+        },
+        "departureDate": "2026-05-19T06:25:00",
+        "arrivalDate": "2026-05-19T07:50:00",
+        "price": {
+          "value": 39.99,
+          "valueMainUnit": "39",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1771~ ~~VLC~05/19/2026 06:25~MRS~05/19/2026 07:50~~",
+        "flightNumber": "FR1771",
+        "previousPrice": null,
+        "priceUpdated": 1768560296000
+      },
+      "summary": {
+        "price": {
+          "value": 39.99,
+          "valueMainUnit": "39",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Spain",
+          "iataCode": "ACE",
+          "name": "Lanzarote",
+          "seoName": "lanzarote",
+          "city": {
+            "name": "Lanzarote",
+            "code": "LANZAROTE",
+            "countryCode": "es"
+          }
+        },
+        "departureDate": "2026-05-18T11:10:00",
+        "arrivalDate": "2026-05-18T12:55:00",
+        "price": {
+          "value": 40.86,
+          "valueMainUnit": "40",
+          "valueFractionalUnit": "86",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~3489~ ~~VLC~05/18/2026 11:10~ACE~05/18/2026 12:55~~",
+        "flightNumber": "FR3489",
+        "previousPrice": null,
+        "priceUpdated": 1768561973000
+      },
+      "summary": {
+        "price": {
+          "value": 40.86,
+          "valueMainUnit": "40",
+          "valueFractionalUnit": "86",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "BGY",
+          "name": "Milan Bergamo",
+          "seoName": "milan-bergamo",
+          "city": {
+            "name": "Bergamo",
+            "code": "BERGAMO",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-19T09:35:00",
+        "arrivalDate": "2026-05-19T11:35:00",
+        "price": {
+          "value": 40.99,
+          "valueMainUnit": "40",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~ 496~ ~~VLC~05/19/2026 09:35~BGY~05/19/2026 11:35~~",
+        "flightNumber": "FR496",
+        "previousPrice": null,
+        "priceUpdated": 1768576557000
+      },
+      "summary": {
+        "price": {
+          "value": 40.99,
+          "valueMainUnit": "40",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "MXP",
+          "name": "Milan Malpensa",
+          "seoName": "milan-malpensa",
+          "city": {
+            "name": "Milan",
+            "code": "MILAN",
+            "macCode": "MIL",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-19T09:35:00",
+        "arrivalDate": "2026-05-19T11:35:00",
+        "price": {
+          "value": 40.99,
+          "valueMainUnit": "40",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1445~ ~~VLC~05/19/2026 09:35~MXP~05/19/2026 11:35~~",
+        "flightNumber": "FR1445",
+        "previousPrice": null,
+        "priceUpdated": 1768576616000
+      },
+      "summary": {
+        "price": {
+          "value": 40.99,
+          "valueMainUnit": "40",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "France",
+          "iataCode": "NTE",
+          "name": "Nantes",
+          "seoName": "nantes",
+          "city": {
+            "name": "Nantes",
+            "code": "NANTES",
+            "countryCode": "fr"
+          }
+        },
+        "departureDate": "2026-05-19T05:50:00",
+        "arrivalDate": "2026-05-19T07:35:00",
+        "price": {
+          "value": 40.99,
+          "valueMainUnit": "40",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1713~ ~~VLC~05/19/2026 05:50~NTE~05/19/2026 07:35~~",
+        "flightNumber": "FR1713",
+        "previousPrice": null,
+        "priceUpdated": 1768576128000
+      },
+      "summary": {
+        "price": {
+          "value": 40.99,
+          "valueMainUnit": "40",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "France",
+          "iataCode": "TLS",
+          "name": "Toulouse",
+          "seoName": "toulouse",
+          "city": {
+            "name": "Toulouse",
+            "code": "TOULOUSE",
+            "countryCode": "fr"
+          }
+        },
+        "departureDate": "2026-05-18T17:35:00",
+        "arrivalDate": "2026-05-18T18:50:00",
+        "price": {
+          "value": 40.99,
+          "valueMainUnit": "40",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~2081~ ~~VLC~05/18/2026 17:35~TLS~05/18/2026 18:50~~",
+        "flightNumber": "FR2081",
+        "previousPrice": null,
+        "priceUpdated": 1768560300000
+      },
+      "summary": {
+        "price": {
+          "value": 40.99,
+          "valueMainUnit": "40",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "United Kingdom",
+          "iataCode": "BHX",
+          "name": "Birmingham",
+          "seoName": "birmingham",
+          "city": {
+            "name": "Birmingham",
+            "code": "BIRMINGHAM",
+            "countryCode": "gb"
+          }
+        },
+        "departureDate": "2026-05-19T08:30:00",
+        "arrivalDate": "2026-05-19T10:00:00",
+        "price": {
+          "value": 43.99,
+          "valueMainUnit": "43",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~9381~ ~~VLC~05/19/2026 08:30~BHX~05/19/2026 10:00~~",
+        "flightNumber": "FR9381",
+        "previousPrice": null,
+        "priceUpdated": 1768576166000
+      },
+      "summary": {
+        "price": {
+          "value": 43.99,
+          "valueMainUnit": "43",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": true
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "FCO",
+          "name": "Rome Fiumicino",
+          "seoName": "rome-fiumicino",
+          "city": {
+            "name": "Rome",
+            "code": "ROME",
+            "macCode": "ROM",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-19T18:45:00",
+        "arrivalDate": "2026-05-19T20:50:00",
+        "price": {
+          "value": 44.99,
+          "valueMainUnit": "44",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1000~ ~~VLC~05/19/2026 18:45~FCO~05/19/2026 20:50~~",
+        "flightNumber": "FR1000",
+        "previousPrice": null,
+        "priceUpdated": 1768576481000
+      },
+      "summary": {
+        "price": {
+          "value": 44.99,
+          "valueMainUnit": "44",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Hungary",
+          "iataCode": "BUD",
+          "name": "Budapest",
+          "seoName": "budapest",
+          "city": {
+            "name": "Budapest",
+            "code": "BUDAPEST",
+            "countryCode": "hu"
+          }
+        },
+        "departureDate": "2026-05-19T10:00:00",
+        "arrivalDate": "2026-05-19T12:50:00",
+        "price": {
+          "value": 46.99,
+          "valueMainUnit": "46",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~2300~ ~~VLC~05/19/2026 10:00~BUD~05/19/2026 12:50~~",
+        "flightNumber": "FR2300",
+        "previousPrice": null,
+        "priceUpdated": 1768576212000
+      },
+      "summary": {
+        "price": {
+          "value": 46.99,
+          "valueMainUnit": "46",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "BLQ",
+          "name": "Bologna",
+          "seoName": "bologna",
+          "city": {
+            "name": "Bologna",
+            "code": "BOLOGNA",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-19T12:15:00",
+        "arrivalDate": "2026-05-19T14:15:00",
+        "price": {
+          "value": 47.99,
+          "valueMainUnit": "47",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~ 619~ ~~VLC~05/19/2026 12:15~BLQ~05/19/2026 14:15~~",
+        "flightNumber": "FR619",
+        "previousPrice": null,
+        "priceUpdated": 1768560288000
+      },
+      "summary": {
+        "price": {
+          "value": 47.99,
+          "valueMainUnit": "47",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "TRN",
+          "name": "Turin",
+          "seoName": "turin",
+          "city": {
+            "name": "Turin",
+            "code": "TURIN",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-19T14:10:00",
+        "arrivalDate": "2026-05-19T16:00:00",
+        "price": {
+          "value": 47.99,
+          "valueMainUnit": "47",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~2258~ ~~VLC~05/19/2026 14:10~TRN~05/19/2026 16:00~~",
+        "flightNumber": "FR2258",
+        "previousPrice": null,
+        "priceUpdated": 1768576141000
+      },
+      "summary": {
+        "price": {
+          "value": 47.99,
+          "valueMainUnit": "47",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Belgium",
+          "iataCode": "CRL",
+          "name": "Brussels Charleroi",
+          "seoName": "brussels-charleroi",
+          "city": {
+            "name": "Charleroi",
+            "code": "CHARLEROI",
+            "countryCode": "be"
+          }
+        },
+        "departureDate": "2026-05-19T09:10:00",
+        "arrivalDate": "2026-05-19T11:30:00",
+        "price": {
+          "value": 49.99,
+          "valueMainUnit": "49",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~2146~ ~~VLC~05/19/2026 09:10~CRL~05/19/2026 11:30~~",
+        "flightNumber": "FR2146",
+        "previousPrice": null,
+        "priceUpdated": 1768576502000
+      },
+      "summary": {
+        "price": {
+          "value": 49.99,
+          "valueMainUnit": "49",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "PSA",
+          "name": "Pisa",
+          "seoName": "pisa",
+          "city": {
+            "name": "Pisa",
+            "code": "PISA",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-19T11:35:00",
+        "arrivalDate": "2026-05-19T13:25:00",
+        "price": {
+          "value": 49.99,
+          "valueMainUnit": "49",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~ 953~ ~~VLC~05/19/2026 11:35~PSA~05/19/2026 13:25~~",
+        "flightNumber": "FR953",
+        "previousPrice": null,
+        "priceUpdated": 1768575923000
+      },
+      "summary": {
+        "price": {
+          "value": 49.99,
+          "valueMainUnit": "49",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Poland",
+          "iataCode": "WMI",
+          "name": "Warsaw Modlin",
+          "seoName": "warsaw-modlin",
+          "city": {
+            "name": "Warsaw",
+            "code": "WARSAW",
+            "macCode": "WWA",
+            "countryCode": "pl"
+          }
+        },
+        "departureDate": "2026-05-19T05:45:00",
+        "arrivalDate": "2026-05-19T09:15:00",
+        "price": {
+          "value": 49.99,
+          "valueMainUnit": "49",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~6321~ ~~VLC~05/19/2026 05:45~WMI~05/19/2026 09:15~~",
+        "flightNumber": "FR6321",
+        "previousPrice": null,
+        "priceUpdated": 1768560296000
+      },
+      "summary": {
+        "price": {
+          "value": 49.99,
+          "valueMainUnit": "49",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": true
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "PMO",
+          "name": "Palermo",
+          "seoName": "palermo",
+          "city": {
+            "name": "Palermo",
+            "code": "PALERMO",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-19T05:50:00",
+        "arrivalDate": "2026-05-19T07:55:00",
+        "price": {
+          "value": 51.99,
+          "valueMainUnit": "51",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~7548~ ~~VLC~05/19/2026 05:50~PMO~05/19/2026 07:55~~",
+        "flightNumber": "FR7548",
+        "previousPrice": null,
+        "priceUpdated": 1768575902000
+      },
+      "summary": {
+        "price": {
+          "value": 51.99,
+          "valueMainUnit": "51",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Ireland",
+          "iataCode": "DUB",
+          "name": "Dublin",
+          "seoName": "dublin",
+          "city": {
+            "name": "Dublin",
+            "code": "DUBLIN",
+            "countryCode": "ie"
+          }
+        },
+        "departureDate": "2026-05-19T23:40:00",
+        "arrivalDate": "2026-05-20T01:15:00",
+        "price": {
+          "value": 52.99,
+          "valueMainUnit": "52",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~2212~ ~~VLC~05/19/2026 23:40~DUB~05/20/2026 01:15~~",
+        "flightNumber": "FR2212",
+        "previousPrice": null,
+        "priceUpdated": 1768560290000
+      },
+      "summary": {
+        "price": {
+          "value": 52.99,
+          "valueMainUnit": "52",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Germany",
+          "iataCode": "FKB",
+          "name": "Karlsruhe / Baden-Baden",
+          "seoName": "karlsruhe-baden",
+          "city": {
+            "name": "Karlsruhe",
+            "code": "KARLSRUHE",
+            "countryCode": "de"
+          }
+        },
+        "departureDate": "2026-05-18T20:10:00",
+        "arrivalDate": "2026-05-18T22:25:00",
+        "price": {
+          "value": 61.99,
+          "valueMainUnit": "61",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1781~ ~~VLC~05/18/2026 20:10~FKB~05/18/2026 22:25~~",
+        "flightNumber": "FR1781",
+        "previousPrice": null,
+        "priceUpdated": 1768560293000
+      },
+      "summary": {
+        "price": {
+          "value": 61.99,
+          "valueMainUnit": "61",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Austria",
+          "iataCode": "VIE",
+          "name": "Vienna",
+          "seoName": "vienna",
+          "city": {
+            "name": "Vienna",
+            "code": "VIENNA",
+            "countryCode": "at"
+          }
+        },
+        "departureDate": "2026-05-19T19:10:00",
+        "arrivalDate": "2026-05-19T21:50:00",
+        "price": {
+          "value": 61.99,
+          "valueMainUnit": "61",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~ 803~ ~~VLC~05/19/2026 19:10~VIE~05/19/2026 21:50~~",
+        "flightNumber": "FR803",
+        "previousPrice": null,
+        "priceUpdated": 1768560300000
+      },
+      "summary": {
+        "price": {
+          "value": 61.99,
+          "valueMainUnit": "61",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Malta",
+          "iataCode": "MLA",
+          "name": "Malta",
+          "seoName": "malta",
+          "city": {
+            "name": "Malta",
+            "code": "MALTA",
+            "countryCode": "mt"
+          }
+        },
+        "departureDate": "2026-05-18T08:40:00",
+        "arrivalDate": "2026-05-18T10:55:00",
+        "price": {
+          "value": 63.99,
+          "valueMainUnit": "63",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~7218~ ~~VLC~05/18/2026 08:40~MLA~05/18/2026 10:55~~",
+        "flightNumber": "FR7218",
+        "previousPrice": null,
+        "priceUpdated": 1768575807000
+      },
+      "summary": {
+        "price": {
+          "value": 63.99,
+          "valueMainUnit": "63",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Bulgaria",
+          "iataCode": "SOF",
+          "name": "Sofia",
+          "seoName": "sofia",
+          "city": {
+            "name": "Sofia",
+            "code": "SOFIA",
+            "countryCode": "bg"
+          }
+        },
+        "departureDate": "2026-05-18T06:55:00",
+        "arrivalDate": "2026-05-18T11:00:00",
+        "price": {
+          "value": 63.99,
+          "valueMainUnit": "63",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~9238~ ~~VLC~05/18/2026 06:55~SOF~05/18/2026 11:00~~",
+        "flightNumber": "FR9238",
+        "previousPrice": null,
+        "priceUpdated": 1768575941000
+      },
+      "summary": {
+        "price": {
+          "value": 63.99,
+          "valueMainUnit": "63",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": true
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Poland",
+          "iataCode": "KRK",
+          "name": "Krakow",
+          "seoName": "krakow",
+          "city": {
+            "name": "Krakow",
+            "code": "KRAKOW",
+            "countryCode": "pl"
+          }
+        },
+        "departureDate": "2026-05-19T21:45:00",
+        "arrivalDate": "2026-05-20T00:45:00",
+        "price": {
+          "value": 64.99,
+          "valueMainUnit": "64",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~2228~ ~~VLC~05/19/2026 21:45~KRK~05/20/2026 00:45~~",
+        "flightNumber": "FR2228",
+        "previousPrice": null,
+        "priceUpdated": 1768575773000
+      },
+      "summary": {
+        "price": {
+          "value": 64.99,
+          "valueMainUnit": "64",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Belgium",
+          "iataCode": "BRU",
+          "name": "Brussels",
+          "seoName": "brussels-zaventem",
+          "city": {
+            "name": "Brussels",
+            "code": "BRUSSELS",
+            "macCode": "BRL",
+            "countryCode": "be"
+          }
+        },
+        "departureDate": "2026-05-18T05:50:00",
+        "arrivalDate": "2026-05-18T08:15:00",
+        "price": {
+          "value": 69.99,
+          "valueMainUnit": "69",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~2986~ ~~VLC~05/18/2026 05:50~BRU~05/18/2026 08:15~~",
+        "flightNumber": "FR2986",
+        "previousPrice": null,
+        "priceUpdated": 1768576437000
+      },
+      "summary": {
+        "price": {
+          "value": 69.99,
+          "valueMainUnit": "69",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "United Kingdom",
+          "iataCode": "EDI",
+          "name": "Edinburgh",
+          "seoName": "edinburgh",
+          "city": {
+            "name": "Edinburgh",
+            "code": "EDINBURGH",
+            "countryCode": "gb"
+          }
+        },
+        "departureDate": "2026-05-19T11:50:00",
+        "arrivalDate": "2026-05-19T13:50:00",
+        "price": {
+          "value": 70.99,
+          "valueMainUnit": "70",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1093~ ~~VLC~05/19/2026 11:50~EDI~05/19/2026 13:50~~",
+        "flightNumber": "FR1093",
+        "previousPrice": null,
+        "priceUpdated": 1768576389000
+      },
+      "summary": {
+        "price": {
+          "value": 70.99,
+          "valueMainUnit": "70",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Germany",
+          "iataCode": "NUE",
+          "name": "Nuremberg",
+          "seoName": "nuremberg",
+          "city": {
+            "name": "Nuremberg",
+            "code": "NUREMBERG",
+            "countryCode": "de"
+          }
+        },
+        "departureDate": "2026-05-19T15:30:00",
+        "arrivalDate": "2026-05-19T17:55:00",
+        "price": {
+          "value": 70.99,
+          "valueMainUnit": "70",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1130~ ~~VLC~05/19/2026 15:30~NUE~05/19/2026 17:55~~",
+        "flightNumber": "FR1130",
+        "previousPrice": null,
+        "priceUpdated": 1768560292000
+      },
+      "summary": {
+        "price": {
+          "value": 70.99,
+          "valueMainUnit": "70",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Germany",
+          "iataCode": "BER",
+          "name": "Berlin Brandenburg",
+          "seoName": "brandenburg",
+          "city": {
+            "name": "Berlin",
+            "code": "BERLIN",
+            "macCode": "BER",
+            "countryCode": "de"
+          }
+        },
+        "departureDate": "2026-05-19T19:50:00",
+        "arrivalDate": "2026-05-19T22:45:00",
+        "price": {
+          "value": 72.99,
+          "valueMainUnit": "72",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~ 139~ ~~VLC~05/19/2026 19:50~BER~05/19/2026 22:45~~",
+        "flightNumber": "FR139",
+        "previousPrice": null,
+        "priceUpdated": 1768576242000
+      },
+      "summary": {
+        "price": {
+          "value": 72.99,
+          "valueMainUnit": "72",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Sweden",
+          "iataCode": "ARN",
+          "name": "Stockholm Arlanda",
+          "seoName": "stockholm-arlandia",
+          "city": {
+            "name": "Stockholm",
+            "code": "STOCKHOLM",
+            "macCode": "SLM",
+            "countryCode": "se"
+          }
+        },
+        "departureDate": "2026-05-19T16:20:00",
+        "arrivalDate": "2026-05-19T20:10:00",
+        "price": {
+          "value": 73.19,
+          "valueMainUnit": "73",
+          "valueFractionalUnit": "19",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1733~ ~~VLC~05/19/2026 16:20~ARN~05/19/2026 20:10~~",
+        "flightNumber": "FR1733",
+        "previousPrice": null,
+        "priceUpdated": 1768562092000
+      },
+      "summary": {
+        "price": {
+          "value": 73.19,
+          "valueMainUnit": "73",
+          "valueFractionalUnit": "19",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "CAG",
+          "name": "Cagliari",
+          "seoName": "cagliari",
+          "city": {
+            "name": "Cagliari",
+            "code": "CAGLIARI",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-18T15:30:00",
+        "arrivalDate": "2026-05-18T17:10:00",
+        "price": {
+          "value": 76.15,
+          "valueMainUnit": "76",
+          "valueFractionalUnit": "15",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~5275~ ~~VLC~05/18/2026 15:30~CAG~05/18/2026 17:10~~",
+        "flightNumber": "FR5275",
+        "previousPrice": null,
+        "priceUpdated": 1768578302000
+      },
+      "summary": {
+        "price": {
+          "value": 76.15,
+          "valueMainUnit": "76",
+          "valueFractionalUnit": "15",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Poland",
+          "iataCode": "WRO",
+          "name": "Wroclaw",
+          "seoName": "wroclaw",
+          "city": {
+            "name": "Wroclaw",
+            "code": "WROCLAW",
+            "countryCode": "pl"
+          }
+        },
+        "departureDate": "2026-05-18T09:55:00",
+        "arrivalDate": "2026-05-18T12:55:00",
+        "price": {
+          "value": 78.09,
+          "valueMainUnit": "78",
+          "valueFractionalUnit": "09",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~4308~ ~~VLC~05/18/2026 09:55~WRO~05/18/2026 12:55~~",
+        "flightNumber": "FR4308",
+        "previousPrice": null,
+        "priceUpdated": 1768561588000
+      },
+      "summary": {
+        "price": {
+          "value": 78.09,
+          "valueMainUnit": "78",
+          "valueFractionalUnit": "09",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "SUF",
+          "name": "Lamezia",
+          "seoName": "lamezia",
+          "city": {
+            "name": "Lamezia",
+            "code": "LAMEZIA",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-18T19:50:00",
+        "arrivalDate": "2026-05-18T22:10:00",
+        "price": {
+          "value": 85.12,
+          "valueMainUnit": "85",
+          "valueFractionalUnit": "12",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~8757~ ~~VLC~05/18/2026 19:50~SUF~05/18/2026 22:10~~",
+        "flightNumber": "FR8757",
+        "previousPrice": null,
+        "priceUpdated": 1768561587000
+      },
+      "summary": {
+        "price": {
+          "value": 85.12,
+          "valueMainUnit": "85",
+          "valueFractionalUnit": "12",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": true
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Ireland",
+          "iataCode": "ORK",
+          "name": "Cork",
+          "seoName": "cork",
+          "city": {
+            "name": "Cork",
+            "code": "CORK",
+            "countryCode": "ie"
+          }
+        },
+        "departureDate": "2026-05-18T15:40:00",
+        "arrivalDate": "2026-05-18T17:15:00",
+        "price": {
+          "value": 86.99,
+          "valueMainUnit": "86",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~8110~ ~~VLC~05/18/2026 15:40~ORK~05/18/2026 17:15~~",
+        "flightNumber": "FR8110",
+        "previousPrice": null,
+        "priceUpdated": 1768560295000
+      },
+      "summary": {
+        "price": {
+          "value": 86.99,
+          "valueMainUnit": "86",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Italy",
+          "iataCode": "NAP",
+          "name": "Naples",
+          "seoName": "naples",
+          "city": {
+            "name": "Naples",
+            "code": "NAPLES",
+            "countryCode": "it"
+          }
+        },
+        "departureDate": "2026-05-19T20:15:00",
+        "arrivalDate": "2026-05-19T22:25:00",
+        "price": {
+          "value": 92.99,
+          "valueMainUnit": "92",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~6837~ ~~VLC~05/19/2026 20:15~NAP~05/19/2026 22:25~~",
+        "flightNumber": "FR6837",
+        "previousPrice": null,
+        "priceUpdated": 1768576574000
+      },
+      "summary": {
+        "price": {
+          "value": 92.99,
+          "valueMainUnit": "92",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "France",
+          "iataCode": "BVA",
+          "name": "Paris Beauvais",
+          "seoName": "paris-beauvais",
+          "city": {
+            "name": "Paris",
+            "code": "PARIS",
+            "macCode": "PAR",
+            "countryCode": "fr"
+          }
+        },
+        "departureDate": "2026-05-18T17:25:00",
+        "arrivalDate": "2026-05-18T19:35:00",
+        "price": {
+          "value": 99.99,
+          "valueMainUnit": "99",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~9000~ ~~VLC~05/18/2026 17:25~BVA~05/18/2026 19:35~~",
+        "flightNumber": "FR9000",
+        "previousPrice": null,
+        "priceUpdated": 1768560290000
+      },
+      "summary": {
+        "price": {
+          "value": 99.99,
+          "valueMainUnit": "99",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Germany",
+          "iataCode": "FMM",
+          "name": "Memmingen",
+          "seoName": "munich-memmingen",
+          "city": {
+            "name": "Memmingen",
+            "code": "MEMMINGEN",
+            "countryCode": "de"
+          }
+        },
+        "departureDate": "2026-05-18T11:20:00",
+        "arrivalDate": "2026-05-18T13:35:00",
+        "price": {
+          "value": 103.13,
+          "valueMainUnit": "103",
+          "valueFractionalUnit": "13",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1849~ ~~VLC~05/18/2026 11:20~FMM~05/18/2026 13:35~~",
+        "flightNumber": "FR1849",
+        "previousPrice": null,
+        "priceUpdated": 1768561849000
+      },
+      "summary": {
+        "price": {
+          "value": 103.13,
+          "valueMainUnit": "103",
+          "valueFractionalUnit": "13",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": true
+      }
+    },
+    {
+      "outbound": {
+        "departureAirport": {
+          "countryName": "Spain",
+          "iataCode": "VLC",
+          "name": "Valencia",
+          "seoName": "valencia",
+          "city": {
+            "name": "Valencia",
+            "code": "VALENCIA",
+            "macCode": "VNC",
+            "countryCode": "es"
+          }
+        },
+        "arrivalAirport": {
+          "countryName": "Netherlands",
+          "iataCode": "EIN",
+          "name": "Eindhoven",
+          "seoName": "eindhoven",
+          "city": {
+            "name": "Eindhoven",
+            "code": "EINDHOVEN",
+            "countryCode": "nl"
+          }
+        },
+        "departureDate": "2026-05-18T09:20:00",
+        "arrivalDate": "2026-05-18T11:50:00",
+        "price": {
+          "value": 127.99,
+          "valueMainUnit": "127",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "flightKey": "FR~1717~ ~~VLC~05/18/2026 09:20~EIN~05/18/2026 11:50~~",
+        "flightNumber": "FR1717",
+        "previousPrice": null,
+        "priceUpdated": 1768576402000
+      },
+      "summary": {
+        "price": {
+          "value": 127.99,
+          "valueMainUnit": "127",
+          "valueFractionalUnit": "99",
+          "currencyCode": "EUR",
+          "currencySymbol": "€"
+        },
+        "previousPrice": null,
+        "newRoute": false
+      }
+    }
+  ],
+  "nextPage": null,
+  "size": 51
+}
