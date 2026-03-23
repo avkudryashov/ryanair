@@ -1,52 +1,66 @@
-# Finding Cheap Ryanair Flights from Valencia
+# Ryanair Flight Search
+
+Search for cheap Ryanair round-trip flights with flexible dates, country/airport filters, and caching.
+
+## Features
+
+- Round-trip search from any Ryanair airport
+- Flexible dates (±N days from selected date)
+- Filters: max price, exclude countries/airports
+- Web UI (Flask + HTMX) and CLI
+- Stale-While-Revalidate caching strategy
+- Dark mode, responsive layout (cards on mobile)
+- Geolocation — auto-select nearest airport
 
 ## Installation
+
 ```bash
 pip install -r requirements.txt
 ```
 
-## Usage
+## Web UI
 
-### Basic Examples
 ```bash
-# Search for flights on a specific date with different stay durations
-python3 main.py -d 2026-02-15 -n 1,2,3
+python3 app.py
+```
 
-# Weekend trip (2 nights)
+Open http://localhost:5000
+
+## CLI
+
+```bash
+# Search flights on a specific date
+python3 main.py -d 2026-05-15 -n 1,2,3
+
+# Weekend trip
 python3 main.py -d 2026-03-20 -n 2
 
-# Single night stay
-python3 main.py -d 2026-04-10 -n 1
-```
-
-### One-Day Trips
-```bash
-# Find one-day trips with overnight stay (searches 2 months ahead)
+# One-day trips
 python3 main.py --one-day
 
-# One-day trips excluding specific airports (e.g., Ibiza, Palma)
-python3 main.py --one-day -e IBZ,PMI
-
-# One-day trips excluding multiple destinations
-python3 main.py --one-day -e BCN,MAD,SVQ
+# Exclude airports
+python3 main.py -d 2026-05-15 -n 1,2 -e AGP,MAD
 ```
 
-### Advanced Usage
+## Tests
+
 ```bash
-# Exclude specific airports from regular search
-python3 main.py -d 2026-05-15 -n 1,2,3 -e AGP,MAD
+# Unit tests
+pytest
 
-# Use custom configuration file
-python3 main.py -d 2026-06-01 -n 3 -c custom_config.yaml
-
-# Long weekend search (3-4 nights) excluding islands
-python3 main.py -d 2026-07-01 -n 3,4 -e IBZ,PMI,ACE
+# Playwright E2E tests
+pytest tests/test_playwright.py -v
 ```
 
-### Configuration
-Settings in `config.yaml`:
-- `max_price`: Maximum ticket price filter
-- `excluded_countries`: Countries to exclude from search
-- `origin_airport`: Departure airport (default: Valencia)
-- `date_range_days`: Days to expand search around departure date (±N days)
-- `latest_arrival_time`: Latest acceptable arrival time at destination
+## Configuration
+
+`config.yaml`:
+- `origin_airport` — departure airport (default: VLC)
+- `max_price` — max ticket price (EUR)
+- `excluded_countries` — countries to exclude
+- `date_flexibility_days` — ±days from departure date
+- `max_arrival_time_destination` — latest arrival time
+
+## License
+
+[MIT](LICENSE)

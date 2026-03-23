@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск дешёвых рейсов Ryanair — билеты от {{ max_price }} EUR</title>
+    <meta name="description" content="Поиск самых дешёвых рейсов Ryanair с гибкими датами. Находите авиабилеты из любого аэропорта Ryanair по лучшим ценам.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url_root }}">
+
+    {# Open Graph #}
+    <meta property="og:title" content="Поиск дешёвых рейсов Ryanair">
+    <meta property="og:description" content="Находите самые дешёвые рейсы Ryanair с гибкими датами и фильтрами.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url_root }}">
+    <meta property="og:locale" content="ru_RU">
+
+    {# JSON-LD structured data #}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Ryanair Flight Search",
+        "description": "Поиск самых дешёвых рейсов Ryanair с гибкими датами",
+        "applicationCategory": "TravelApplication",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "EUR",
+            "lowPrice": "1",
+            "highPrice": "{{ max_price }}"
+        }
+    }
+    </script>
+
+    {# HTMX #}
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+
+    <style>
+        /* ── Design tokens ── */
+        :root {
+            --brand: #073590;
+            --brand-light: #0a4cc0;
+            --brand-subtle: #e8eef8;
+            --bg: #f6f7f9;
+            --surface: #ffffff;
+            --surface-hover: #f0f4ff;
+            --border: #e0e3e8;
+            --border-focus: var(--brand);
+            --text: #1a1d23;
+            --text-secondary: #5f6368;
+            --text-muted: #9aa0a6;
+            --error: #d93025;
+            --error-bg: #fce8e6;
+            --success: #1e8e3e;
+            --success-bg: #e6f4ea;
+            --warning: #e65100;
+            --warning-bg: #fff3e0;
+            --info: #1565c0;
+            --info-bg: #e3f2fd;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,.1);
+            --transition: 200ms ease;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            color-scheme: light dark;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --brand: #6b9fff;
+                --brand-light: #8bb4ff;
+                --brand-subtle: #1a2744;
+                --bg: #0f1117;
+                --surface: #1a1d27;
+                --surface-hover: #242836;
+                --border: #2d3140;
+                --text: #e8eaed;
+                --text-secondary: #9aa0a6;
+                --text-muted: #5f6368;
+                --error-bg: #3c1410;
+                --success-bg: #0d3318;
+                --warning-bg: #3e2100;
+                --info-bg: #0d2137;
+                --shadow: 0 1px 3px rgba(0,0,0,.3);
+                --shadow-lg: 0 4px 16px rgba(0,0,0,.4);
+            }
+        }
+
+        /* ── Reset & base ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Layout ── */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        /* ── Header ── */
+        header {
+            margin-bottom: 24px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--brand);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        @media (prefers-color-scheme: dark) {
+            .logo-icon { background: var(--brand-subtle); color: var(--brand); }
+        }
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+        .logo p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ── Search form card ── */
+        .search-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: end;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .field input, .field select {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: var(--font);
+            background: var(--surface);
+            color: var(--text);
+            transition: border-color var(--transition), box-shadow var(--transition);
+            min-width: 0;
+        }
+        .field input:focus, .field select:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, transparent);
+        }
+        .field-origin { flex: 1 1 300px; min-width: 0; }
+        .field-origin select { width: 100%; }
+        .field-date { flex: 0 0 auto; }
+        .field-small { flex: 0 0 auto; }
+        .field-small input { width: 80px; }
+        .field-btn { flex: 0 0 auto; }
+        .date-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .date-arrow {
+            width: 36px;
+            height: 40px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            flex-shrink: 0;
+        }
+        .date-arrow:hover {
+            background: var(--brand-subtle);
+            border-color: var(--brand);
+        }
+        .btn-search {
+            padding: 10px 28px;
+            background: var(--brand);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: var(--font);
+            cursor: pointer;
+            transition: all var(--transition);
+            white-space: nowrap;
+            min-height: 40px;
+        }
+        .btn-search:hover { filter: brightness(1.15); }
+        .btn-search:active { transform: scale(0.98); }
+
+        /* ── Filters row ── */
+        .filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: end;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── Multi-select ── */
+        .multi-select { position: relative; min-width: 200px; }
+        .ms-btn {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            background: var(--surface);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            min-height: 40px;
+            transition: all var(--transition);
+            color: var(--text);
+        }
+        .ms-btn:hover { border-color: var(--brand); }
+        .ms-btn .arrow { font-size: 10px; color: var(--text-muted); transition: transform var(--transition); }
+        .ms-btn.open .arrow { transform: rotate(180deg); }
+        .ms-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ms-text.placeholder { color: var(--text-muted); }
+        .ms-panel {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            z-index: 200;
+            max-height: 320px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+        }
+        .ms-panel.open { display: block; }
+        .ms-search {
+            width: 100%;
+            padding: 10px 12px;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            outline: none;
+            background: var(--surface);
+            color: var(--text);
+            font-family: var(--font);
+        }
+        .ms-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background var(--transition);
+            color: var(--text);
+        }
+        .ms-item:hover { background: var(--surface-hover); }
+        .ms-item input[type=checkbox] { accent-color: var(--brand); cursor: pointer; }
+        .ms-item.country-item { font-weight: 600; background: var(--bg); border-top: 1px solid var(--border); }
+        .ms-item.airport-item { padding-left: 32px; font-weight: 400; }
+
+        /* ── Results area ── */
+        #results-area { min-height: 100px; }
+
+        /* ── HTMX loading indicator ── */
+        .htmx-indicator {
+            display: none;
+        }
+        .htmx-request .htmx-indicator,
+        .htmx-request.htmx-indicator {
+            display: flex;
+        }
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            z-index: 9999;
+        }
+        .loading-bar .bar {
+            height: 100%;
+            background: var(--brand);
+            animation: loading-progress 1.5s ease-in-out infinite;
+            transform-origin: left;
+        }
+        @keyframes loading-progress {
+            0% { transform: scaleX(0); }
+            50% { transform: scaleX(0.7); }
+            100% { transform: scaleX(1); opacity: 0; }
+        }
+
+        .skeleton-wrap {
+            flex-direction: column;
+            gap: 12px;
+            padding: 20px 0;
+        }
+        .skeleton {
+            height: 60px;
+            background: linear-gradient(90deg, var(--border) 25%, var(--surface-hover) 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            border-radius: var(--radius-sm);
+            animation: shimmer 1.5s ease-in-out infinite;
+        }
+        @keyframes shimmer { to { background-position: -200% 0; } }
+
+        /* ── Alert ── */
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+        }
+        .alert-error {
+            background: var(--error-bg);
+            color: var(--error);
+        }
+
+        /* ── Results header ── */
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .results-count {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .badge {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-fresh { background: var(--success-bg); color: var(--success); }
+        .badge-cached { background: var(--info-bg); color: var(--info); }
+        .badge-stale { background: var(--warning-bg); color: var(--warning); }
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--warning);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+
+        /* ── Results table (desktop) ── */
+        .results-table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+        }
+        .results-table th {
+            background: var(--brand);
+            color: #fff;
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+        }
+        @media (prefers-color-scheme: dark) {
+            .results-table th { background: var(--brand-subtle); color: var(--brand); }
+        }
+        .results-table th.sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: background var(--transition);
+        }
+        .results-table th.sortable:hover { filter: brightness(1.2); }
+        .sort-icon { font-size: 10px; }
+        .results-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            vertical-align: middle;
+        }
+        .results-table tbody tr {
+            transition: background var(--transition);
+        }
+        .results-table tbody tr:hover td {
+            background: var(--surface-hover);
+        }
+        .results-table tbody tr:last-child td { border-bottom: none; }
+        .col-num { color: var(--text-muted); font-size: 12px; width: 40px; }
+        .dest-name { font-weight: 500; }
+        .dest-code { color: var(--text-muted); font-size: 12px; margin-left: 4px; }
+        .price-cell { font-weight: 700; color: var(--brand); white-space: nowrap; }
+        .flight-date { display: block; font-size: 12px; color: var(--text-secondary); }
+        .flight-time { font-weight: 500; }
+        .arrow-icon { margin: 0 2px; color: var(--text-muted); }
+        .flight-num { color: var(--text-muted); font-size: 11px; font-family: var(--font-mono); }
+
+        /* ── Flight cards (mobile) ── */
+        .results-cards { display: none; }
+        .flight-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-dest .dest-name { font-size: 16px; font-weight: 600; }
+        .card-dest .dest-code { font-size: 13px; }
+        .card-price { font-size: 18px; font-weight: 700; color: var(--brand); }
+        .card-flights { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .card-leg { display: flex; flex-direction: column; gap: 2px; }
+        .leg-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 600; }
+        .leg-date { font-size: 13px; color: var(--text-secondary); }
+        .leg-time { font-size: 15px; font-weight: 500; }
+        .card-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── Empty state ── */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-state svg { margin-bottom: 16px; }
+        .empty-state p { font-size: 15px; }
+        .empty-hint { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .container { padding: 16px 12px; }
+            .search-card { padding: 16px; }
+            .form-row { flex-direction: column; gap: 12px; }
+            .field-origin { flex: 1 1 100%; }
+            .field-small input { width: 100%; }
+            .btn-search { width: 100%; }
+            .results-table-wrap { display: none; }
+            .results-cards { display: flex; flex-direction: column; gap: 12px; }
+            .filters-row { flex-direction: column; }
+            .multi-select { min-width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .card-flights { grid-template-columns: 1fr; }
+        }
+
+        /* ── Skip link (a11y) ── */
+        .skip-link {
+            position: absolute;
+            top: -100%;
+            left: 16px;
+            padding: 8px 16px;
+            background: var(--brand);
+            color: #fff;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            z-index: 9999;
+            text-decoration: none;
+        }
+        .skip-link:focus { top: 16px; }
+
+        /* ── View transition ── */
+        @view-transition { navigation: auto; }
+    </style>
+</head>
+<body>
+    <a href="#results-area" class="skip-link">Перейти к результатам</a>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon" aria-hidden="true">R</div>
+                <div>
+                    <h1>Ryanair Flight Search</h1>
+                    <p>Поиск дешёвых рейсов с гибкими датами</p>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="search-card" aria-label="Форма поиска">
+                <form id="search-form"
+                      hx-get="/"
+                      hx-target="#results-area"
+                      hx-indicator="#loading-indicator"
+                      hx-push-url="true"
+                      hx-swap="innerHTML transition:true">
+                    <input type="hidden" name="mode" value="regular">
+                    <input type="hidden" name="excl_countries" id="excl-countries-input" value="{{ args.get('excl_countries', '') }}">
+                    <input type="hidden" name="excl_airports" id="excl-airports-input" value="{{ args.get('excl_airports', '') }}">
+
+                    <div class="form-row">
+                        <div class="field field-origin">
+                            <label for="origin-select">Аэропорт вылета</label>
+                            <select name="origin" id="origin-select">
+                                {% for ap in airports %}
+                                <option value="{{ ap.code }}" {% if args.get('origin', 'VLC') == ap.code %}selected{% endif %}>
+                                    {{ ap.name }} ({{ ap.code }}) — {{ ap.country }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="field field-date">
+                            <label for="departure-date">Дата вылета</label>
+                            <div class="date-group">
+                                <button type="button" class="date-arrow" id="date-prev" aria-label="Предыдущий день">&#9664;</button>
+                                <input type="date" name="departure_date" id="departure-date" value="{{ args.get('departure_date', today) }}">
+                                <button type="button" class="date-arrow" id="date-next" aria-label="Следующий день">&#9654;</button>
+                            </div>
+                        </div>
+                        <div class="field field-small">
+                            <label for="flex-days">&plusmn; дней</label>
+                            <input type="number" name="flex_days" id="flex-days" value="{{ args.get('flex_days', '1') }}" min="0" max="7">
+                        </div>
+                        <div class="field field-small">
+                            <label for="nights">Ночей</label>
+                            <input type="text" name="nights" id="nights" value="{{ args.get('nights', '1,2') }}" placeholder="1,2,3">
+                        </div>
+                        <div class="field field-small">
+                            <label for="max-price">Макс. цена</label>
+                            <input type="number" name="max_price" id="max-price" value="{{ args.get('max_price', max_price) }}" min="1" step="1">
+                        </div>
+                        <div class="field field-btn">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn-search">Найти рейсы</button>
+                        </div>
+                    </div>
+
+                    <div class="filters-row">
+                        <div class="field">
+                            <label>Исключить страны</label>
+                            <div class="multi-select" id="ms-countries">
+                                <div class="ms-btn" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+                                    <span class="ms-text placeholder">Выберите страны…</span>
+                                    <span class="arrow" aria-hidden="true">&#9660;</span>
+                                </div>
+                                <div class="ms-panel" role="listbox">
+                                    <input type="text" class="ms-search" placeholder="Поиск…" aria-label="Фильтр стран">
+                                    {% for country in countries %}
+                                    <label class="ms-item country-item" data-country="{{ country }}" role="option">
+                                        <input type="checkbox" value="{{ country }}"> {{ country }}
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>Исключить аэропорты</label>
+                            <div class="multi-select" id="ms-airports">
+                                <div class="ms-btn" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+                                    <span class="ms-text placeholder">Выберите аэропорты…</span>
+                                    <span class="arrow" aria-hidden="true">&#9660;</span>
+                                </div>
+                                <div class="ms-panel" role="listbox">
+                                    <input type="text" class="ms-search" placeholder="Поиск…" aria-label="Фильтр аэропортов">
+                                    {% for country in countries %}
+                                    <label class="ms-item country-item" data-country-group="{{ country }}" role="option">
+                                        <input type="checkbox" value="__country__{{ country }}"> {{ country }}
+                                    </label>
+                                    {% for ap in airports if ap.country == country %}
+                                    <label class="ms-item airport-item" data-airport-country="{{ country }}" role="option">
+                                        <input type="checkbox" value="{{ ap.code }}"> {{ ap.name }} ({{ ap.code }})
+                                    </label>
+                                    {% endfor %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            {# Loading indicator (top bar + skeletons) #}
+            <div id="loading-indicator" class="htmx-indicator">
+                <div class="loading-bar"><div class="bar"></div></div>
+                <div class="skeleton-wrap htmx-indicator" id="loading-indicator">
+                    <div class="skeleton" style="width:40%;height:20px;margin-bottom:8px"></div>
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                    <div class="skeleton" style="width:80%"></div>
+                </div>
+            </div>
+
+            {# Results injected here by HTMX #}
+            <section id="results-area" aria-live="polite">
+                {% include 'partials/results.html' %}
+            </section>
+        </main>
+
+        <footer style="margin-top:40px; padding-top:20px; border-top:1px solid var(--border); text-align:center;">
+            <p style="font-size:12px; color:var(--text-muted);">Данные предоставлены Ryanair API. Цены могут отличаться на момент бронирования.</p>
+        </footer>
+    </div>
+
+    <script>
+        const countryToAirports = {{ country_to_airports | tojson }};
+        const airportCoords = {{ airport_coords | tojson }};
+
+        // ── Geolocation ──
+        const originSelect = document.getElementById('origin-select');
+
+        function warmOrigin(code) {
+            fetch('/api/warm', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({origin: code})
+            }).catch(() => {});
+        }
+
+        function selectNearestAirport(lat, lng) {
+            let minDist = Infinity, nearest = null;
+            for (const [code, coords] of Object.entries(airportCoords)) {
+                const dlat = coords.lat - lat, dlng = coords.lng - lng;
+                const dist = dlat * dlat + dlng * dlng;
+                if (dist < minDist) { minDist = dist; nearest = code; }
+            }
+            if (nearest && !new URLSearchParams(location.search).get('origin')) {
+                originSelect.value = nearest;
+                warmOrigin(nearest);
+            }
+        }
+
+        if (navigator.geolocation && !new URLSearchParams(location.search).get('origin')) {
+            navigator.geolocation.getCurrentPosition(
+                pos => selectNearestAirport(pos.coords.latitude, pos.coords.longitude),
+                () => {}
+            );
+        }
+
+        originSelect.addEventListener('change', () => warmOrigin(originSelect.value));
+
+        // ── Multi-select ──
+        function initMultiSelect(container, hiddenInput, opts = {}) {
+            const btn = container.querySelector('.ms-btn');
+            const panel = container.querySelector('.ms-panel');
+            const search = panel.querySelector('.ms-search');
+            const textEl = btn.querySelector('.ms-text');
+            const checkboxes = panel.querySelectorAll('input[type=checkbox]');
+            const placeholder = opts.placeholder || 'Выберите…';
+
+            function updateText() {
+                const checked = [...checkboxes].filter(cb => cb.checked && !cb.value.startsWith('__country__'));
+                if (checked.length === 0) {
+                    textEl.textContent = placeholder;
+                    textEl.classList.add('placeholder');
+                } else if (checked.length <= 3) {
+                    textEl.textContent = checked.map(cb => cb.parentElement.textContent.trim()).join(', ');
+                    textEl.classList.remove('placeholder');
+                } else {
+                    textEl.textContent = `Выбрано: ${checked.length}`;
+                    textEl.classList.remove('placeholder');
+                }
+            }
+
+            function updateHidden() {
+                const vals = [...checkboxes]
+                    .filter(cb => cb.checked && !cb.value.startsWith('__country__'))
+                    .map(cb => cb.value);
+                hiddenInput.value = vals.join(',');
+            }
+
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                const isOpen = panel.classList.contains('open');
+                closeAllPanels();
+                if (!isOpen) {
+                    panel.classList.add('open');
+                    btn.classList.add('open');
+                    btn.setAttribute('aria-expanded', 'true');
+                    search.focus();
+                }
+            });
+
+            search.addEventListener('input', () => {
+                const q = search.value.toLowerCase();
+                panel.querySelectorAll('.ms-item').forEach(item => {
+                    item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+                });
+            });
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    if (opts.onChangeCallback) opts.onChangeCallback(cb);
+                    updateText();
+                    updateHidden();
+                });
+            });
+
+            panel.addEventListener('click', e => e.stopPropagation());
+
+            // Restore from URL
+            const currentVal = hiddenInput.value;
+            if (currentVal) {
+                const vals = new Set(currentVal.split(',').map(v => v.trim()).filter(Boolean));
+                checkboxes.forEach(cb => { if (vals.has(cb.value)) cb.checked = true; });
+            }
+            updateText();
+
+            return { checkboxes, updateText, updateHidden };
+        }
+
+        function closeAllPanels() {
+            document.querySelectorAll('.ms-panel').forEach(p => p.classList.remove('open'));
+            document.querySelectorAll('.ms-btn').forEach(b => {
+                b.classList.remove('open');
+                b.setAttribute('aria-expanded', 'false');
+            });
+        }
+        document.addEventListener('click', closeAllPanels);
+
+        // ── Init multi-selects ──
+        const msCountries = initMultiSelect(
+            document.getElementById('ms-countries'),
+            document.getElementById('excl-countries-input'),
+            {
+                placeholder: 'Выберите страны…',
+                onChangeCallback(cb) {
+                    const country = cb.value;
+                    const codes = countryToAirports[country] || [];
+                    const airportPanel = document.getElementById('ms-airports');
+                    codes.forEach(code => {
+                        const acb = airportPanel.querySelector(`input[value="${code}"]`);
+                        if (acb) acb.checked = cb.checked;
+                    });
+                    const groupCb = airportPanel.querySelector(`input[value="__country__${country}"]`);
+                    if (groupCb) groupCb.checked = cb.checked;
+                    msAirports.updateText();
+                    msAirports.updateHidden();
+                }
+            }
+        );
+
+        const msAirports = initMultiSelect(
+            document.getElementById('ms-airports'),
+            document.getElementById('excl-airports-input'),
+            {
+                placeholder: 'Выберите аэропорты…',
+                onChangeCallback(cb) {
+                    if (cb.value.startsWith('__country__')) {
+                        const country = cb.value.replace('__country__', '');
+                        const panel = cb.closest('.ms-panel');
+                        panel.querySelectorAll(`[data-airport-country="${country}"] input`).forEach(acb => {
+                            acb.checked = cb.checked;
+                        });
+                    } else {
+                        const country = cb.closest('[data-airport-country]')?.dataset.airportCountry;
+                        if (country) {
+                            const panel = cb.closest('.ms-panel');
+                            const group = panel.querySelectorAll(`[data-airport-country="${country}"] input`);
+                            const allChecked = [...group].every(a => a.checked);
+                            const groupCb = panel.querySelector(`input[value="__country__${country}"]`);
+                            if (groupCb) groupCb.checked = allChecked;
+                        }
+                    }
+                }
+            }
+        );
+
+        // Restore cascade on load
+        (function() {
+            const val = document.getElementById('excl-countries-input').value;
+            if (!val) return;
+            const selected = val.split(',').map(v => v.trim()).filter(Boolean);
+            const panel = document.getElementById('ms-airports');
+            selected.forEach(country => {
+                (countryToAirports[country] || []).forEach(code => {
+                    const acb = panel.querySelector(`input[value="${code}"]`);
+                    if (acb) acb.checked = true;
+                });
+                const g = panel.querySelector(`input[value="__country__${country}"]`);
+                if (g) g.checked = true;
+            });
+            msAirports.updateText();
+            msAirports.updateHidden();
+        })();
+
+        // ── Date arrows (HTMX-aware) ──
+        (function() {
+            const dateInput = document.getElementById('departure-date');
+            function shiftDate(days) {
+                const d = new Date(dateInput.value);
+                d.setDate(d.getDate() + days);
+                dateInput.value = d.toISOString().slice(0, 10);
+                htmx.trigger('#search-form', 'submit');
+            }
+            document.getElementById('date-prev').addEventListener('click', () => shiftDate(-1));
+            document.getElementById('date-next').addEventListener('click', () => shiftDate(1));
+        })();
+
+        // ── Table sorting (works on initial + HTMX-swapped content) ──
+        function initSorting() {
+            const table = document.getElementById('results-table');
+            if (!table) return;
+            table.querySelectorAll('th.sortable').forEach(th => {
+                th.addEventListener('click', () => {
+                    const col = parseInt(th.dataset.col);
+                    const type = th.dataset.sort;
+                    const isAsc = th.classList.contains('asc');
+                    const dir = isAsc ? 'desc' : 'asc';
+
+                    table.querySelectorAll('th.sortable').forEach(h => {
+                        h.classList.remove('sorted', 'asc', 'desc');
+                        const icon = h.querySelector('.sort-icon');
+                        if (icon) icon.textContent = '';
+                    });
+
+                    th.classList.add('sorted', dir);
+                    let icon = th.querySelector('.sort-icon');
+                    if (!icon) { icon = document.createElement('span'); icon.className = 'sort-icon'; th.appendChild(icon); }
+                    icon.textContent = dir === 'asc' ? ' \u25B2' : ' \u25BC';
+                    th.setAttribute('aria-sort', dir === 'asc' ? 'ascending' : 'descending');
+
+                    const tbody = table.querySelector('tbody');
+                    const rows = [...tbody.querySelectorAll('tr')];
+                    rows.sort((a, b) => {
+                        const aVal = a.children[col].dataset.val;
+                        const bVal = b.children[col].dataset.val;
+                        let cmp = type === 'number' ? parseFloat(aVal) - parseFloat(bVal) : aVal.localeCompare(bVal);
+                        return dir === 'asc' ? cmp : -cmp;
+                    });
+                    rows.forEach((row, i) => {
+                        row.querySelector('.row-num').textContent = i + 1;
+                        tbody.appendChild(row);
+                    });
+                });
+            });
+        }
+        initSorting();
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+{% if error %}
+<div class="alert alert-error" role="alert">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2"/><path d="M10 6v5M10 13.5v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    {{ error }}
+</div>
+{% elif results %}
+<div class="results-header">
+    <p class="results-count">
+        Найдено <strong>{{ results|length }}</strong> {{ 'вариант' if results|length == 1 else ('варианта' if results|length < 5 else 'вариантов') }}
+    </p>
+    {% if freshness %}
+        {% if freshness.stale %}
+            <span class="badge badge-stale" title="API недоступен, данные из кэша">
+                <span class="pulse-dot"></span>
+                {{ freshness.age_minutes }} мин назад
+            </span>
+        {% elif freshness.age_minutes is not none and freshness.age_minutes > 0 %}
+            <span class="badge badge-cached">{{ freshness.age_minutes }} мин назад</span>
+        {% else %}
+            <span class="badge badge-fresh">актуальные цены</span>
+        {% endif %}
+    {% endif %}
+</div>
+
+{# Desktop table #}
+<div class="results-table-wrap" role="region" aria-label="Результаты поиска" tabindex="0">
+    <table class="results-table" id="results-table">
+        <thead>
+            <tr>
+                <th class="col-num">#</th>
+                <th class="sortable" data-sort="string" data-col="1" aria-sort="none">Направление</th>
+                <th class="sortable sorted asc" data-sort="number" data-col="2" aria-sort="ascending">Цена <span class="sort-icon">&#9650;</span></th>
+                <th class="sortable" data-sort="string" data-col="3" aria-sort="none">Туда</th>
+                <th class="sortable" data-sort="string" data-col="4" aria-sort="none">Обратно</th>
+                <th class="sortable" data-sort="number" data-col="5" aria-sort="none">Ночей</th>
+                <th class="sortable" data-sort="number" data-col="6" aria-sort="none">Часов</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in results %}
+            <tr>
+                <td class="col-num row-num">{{ loop.index }}</td>
+                <td data-val="{{ r.destination }}">
+                    <span class="dest-name">{{ r.destination }}</span>
+                    <span class="dest-code">{{ r.dest_code }}</span>
+                </td>
+                <td class="price-cell" data-val="{{ r.total_price }}">{{ r.total_price }}&nbsp;{{ r.currency }}</td>
+                <td data-val="{{ r.out_date }} {{ r.out_dep }}">
+                    <span class="flight-date">{{ r.out_date }}</span>
+                    <span class="flight-time">{{ r.out_dep }}<span class="arrow-icon">&rarr;</span>{{ r.out_arr }}</span>
+                    <span class="flight-num">{{ r.out_flight }}</span>
+                </td>
+                <td data-val="{{ r.in_date }} {{ r.in_dep }}">
+                    <span class="flight-date">{{ r.in_date }}</span>
+                    <span class="flight-time">{{ r.in_dep }}<span class="arrow-icon">&rarr;</span>{{ r.in_arr }}</span>
+                    <span class="flight-num">{{ r.in_flight }}</span>
+                </td>
+                <td data-val="{{ r.nights }}">{{ r.nights }}</td>
+                <td data-val="{{ r.stay_hours }}">{{ r.stay_hours }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{# Mobile cards #}
+<div class="results-cards" aria-label="Результаты поиска">
+    {% for r in results %}
+    <article class="flight-card">
+        <div class="card-header">
+            <div class="card-dest">
+                <span class="dest-name">{{ r.destination }}</span>
+                <span class="dest-code">{{ r.dest_code }}</span>
+            </div>
+            <div class="card-price">{{ r.total_price }}&nbsp;{{ r.currency }}</div>
+        </div>
+        <div class="card-flights">
+            <div class="card-leg">
+                <span class="leg-label">Туда</span>
+                <span class="leg-date">{{ r.out_date }}</span>
+                <span class="leg-time">{{ r.out_dep }} &rarr; {{ r.out_arr }}</span>
+                <span class="flight-num">{{ r.out_flight }}</span>
+            </div>
+            <div class="card-leg">
+                <span class="leg-label">Обратно</span>
+                <span class="leg-date">{{ r.in_date }}</span>
+                <span class="leg-time">{{ r.in_dep }} &rarr; {{ r.in_arr }}</span>
+                <span class="flight-num">{{ r.in_flight }}</span>
+            </div>
+        </div>
+        <div class="card-meta">
+            <span>{{ r.nights }} {{ 'ночь' if r.nights == 1 else ('ночи' if r.nights < 5 else 'ночей') }}</span>
+            <span>{{ r.stay_hours }} ч</span>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+
+<script>initSorting();</script>
+{% elif searched %}
+<div class="empty-state">
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="4 4"/><path d="M18 24h12M24 18v12" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round"/></svg>
+    <p>Подходящих рейсов не найдено</p>
+    <p class="empty-hint">Попробуйте изменить даты или увеличить бюджет</p>
+</div>
+{% endif %}

@@ -49,3 +49,6 @@ output/
 
 # Cache
 .cache/
+.cache_data/
+
+PLAN_NOMAD_MODE.md
