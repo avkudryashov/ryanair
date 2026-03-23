@@ -2,6 +2,8 @@
 
 Search for cheap Ryanair round-trip flights with flexible dates, country/airport filters, and caching.
 
+![Screenshot](screenshot.png)
+
 ## Features
 
 - Round-trip search from any Ryanair airport
