@@ -10,6 +10,7 @@ import asyncio
 import random
 import time
 import diskcache
+from cachetools import TTLCache
 
 
 # TTL конфигурация (fresh_seconds, stale_seconds)
@@ -28,8 +29,8 @@ class FlightSearcher:
     FARFND_API = "https://services-api.ryanair.com/farfnd/v4/oneWayFares"
     AIRPORTS_API = "https://www.ryanair.com/api/views/locate/5/airports/en/active"
 
-    # Максимум параллельных запросов к API
-    MAX_CONCURRENCY = 15
+    # Максимум параллельных запросов к API (HTTP/2 мультиплексирует на одном соединении)
+    MAX_CONCURRENCY = 25
 
     # Список User-Agent для ротации
     USER_AGENTS = [
@@ -49,8 +50,22 @@ class FlightSearcher:
 
         self.origin = self.config['origin_airport']
 
-        # Persistent SQLite кэш (переживает рестарт)
+        # L2: Persistent SQLite кэш (переживает рестарт)
         self._cache = diskcache.Cache(".cache_data", size_limit=256 * 1024 * 1024)
+
+        # L1: In-memory TTL cache (микросекунды vs SQLite миллисекунды)
+        self._l1 = TTLCache(maxsize=4096, ttl=300)  # 5 мин, ~4K записей
+
+        # Persistent httpx client — переиспользует TCP/TLS/HTTP2 соединения
+        self._http_client = httpx.AsyncClient(
+            http2=True,
+            limits=httpx.Limits(
+                max_connections=40,
+                max_keepalive_connections=20,
+                keepalive_expiry=120,
+            ),
+            timeout=httpx.Timeout(30.0, connect=10.0),
+        )
 
         # Отслеживание свежести данных для UI
         self._last_api_call_ts = 0  # timestamp последнего реального обращения к API
@@ -68,17 +83,22 @@ class FlightSearcher:
 
     def _cache_get(self, key: str, fresh_ttl: int, stale_ttl: int) -> Tuple[any, bool]:
         """
-        Stale-While-Revalidate чтение из кэша.
+        L1 (in-memory) → L2 (diskcache/SQLite) с Stale-While-Revalidate.
         Returns: (data, is_stale)
-            data=None если кэш пуст или полностью протух
-            is_stale=True если данные устарели но пригодны
         """
+        # L1: in-memory (только fresh данные)
+        l1_val = self._l1.get(key)
+        if l1_val is not None:
+            return l1_val, False
+
+        # L2: diskcache (SQLite)
         raw = self._cache.get(key)
         if raw is None:
             return None, False
         data, timestamp = raw
         age = time.time() - timestamp
         if age < fresh_ttl:
+            self._l1[key] = data  # promote to L1
             return data, False  # свежие
         elif age < stale_ttl:
             return data, True   # stale — отдаём, но нужно обновить
@@ -86,8 +106,10 @@ class FlightSearcher:
             return None, False  # полностью протухли
 
     def _cache_set(self, key: str, data: any, stale_ttl: int):
-        """Сохраняет в кэш с timestamp. expire=stale_ttl для автоочистки."""
-        self._cache.set(key, (data, time.time()), expire=stale_ttl)
+        """Сохраняет в L1 + L2."""
+        now = time.time()
+        self._l1[key] = data  # L1
+        self._cache.set(key, (data, now), expire=stale_ttl)  # L2
 
     def cache_stats(self) -> dict:
         """Статистика кэша для отладки."""
@@ -380,7 +402,8 @@ class FlightSearcher:
 
         sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
 
-        async with httpx.AsyncClient(http2=True) as client:
+        client = self._http_client
+        if True:  # persistent client, no context manager needed
             # Шаг 1: направления
             print(f"\nПолучение направлений из {self.origin}...")
             dest_params = {
@@ -601,7 +624,8 @@ class FlightSearcher:
 
         sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
 
-        async with httpx.AsyncClient(http2=True) as client:
+        client = self._http_client
+        if True:  # persistent client, no context manager needed
             # Шаг 1: направления
             print(f"Получение направлений из {self.origin}...")
             dest_params = {
@@ -840,7 +864,8 @@ class FlightSearcher:
 
         sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
 
-        async with httpx.AsyncClient(http2=True) as client:
+        client = self._http_client
+        if True:  # persistent client, no context manager needed
             # Шаг 1: направления
             dest_params = {
                 "departureAirportIataCode": origin,
@@ -938,7 +963,8 @@ class FlightSearcher:
     ) -> List[Dict]:
         sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
 
-        async with httpx.AsyncClient(http2=True) as client:
+        client = self._http_client
+        if True:  # persistent client, no context manager needed
             batches = self._build_date_batches(date_from, date_to)
 
             task_list = []
@@ -1032,7 +1058,8 @@ class FlightSearcher:
 
         sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
 
-        async with httpx.AsyncClient(http2=True) as client:
+        client = self._http_client
+        if True:  # persistent client, no context manager needed
 
             # ══════════════════════════════════════════════════════
             # ФАЗА 0: Вычисляем returnable_set — аэропорты, из
