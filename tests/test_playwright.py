@@ -296,6 +296,36 @@ class TestDateNavigation:
         assert new_date != original
 
 
+class TestBookingLinks:
+    """P4: Booking links to Ryanair."""
+
+    def test_booking_links_present(self, flask_server, page):
+        page.goto(BASE)
+        page.locator('#departure-date').fill('2026-05-20')
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.route-card', timeout=15000)
+        links = page.locator('.leg-book')
+        assert links.count() >= 2, "Each route should have booking links"
+
+    def test_booking_link_url_format(self, flask_server, page):
+        page.goto(BASE)
+        page.locator('#departure-date').fill('2026-05-20')
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.leg-book', timeout=15000)
+        href = page.locator('.leg-book').first.get_attribute('href')
+        assert 'ryanair.com' in href
+        assert 'trip/flights/select' in href
+
+    def test_booking_link_has_correct_airports(self, flask_server, page):
+        page.goto(BASE)
+        page.locator('#departure-date').fill('2026-05-20')
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.leg-book', timeout=15000)
+        href = page.locator('.leg-book').first.get_attribute('href')
+        assert 'originIata=VLC' in href
+        assert 'destinationIata=BGY' in href or 'destinationIata=PMO' in href
+
+
 class TestDarkMode:
     """Тесты тёмной темы."""
 
