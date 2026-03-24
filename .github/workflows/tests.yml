@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt pytest
-      - run: pytest tests/test_app.py -v
+      - run: pytest tests/test_app.py tests/test_nomad.py tests/test_translations.py -v
 
   e2e:
     runs-on: ubuntu-latest
