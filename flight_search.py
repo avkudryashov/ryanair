@@ -56,16 +56,13 @@ class FlightSearcher:
         # L1: In-memory TTL cache (микросекунды vs SQLite миллисекунды)
         self._l1 = TTLCache(maxsize=4096, ttl=300)  # 5 мин, ~4K записей
 
-        # Persistent httpx client — переиспользует TCP/TLS/HTTP2 соединения
-        self._http_client = httpx.AsyncClient(
-            http2=True,
-            limits=httpx.Limits(
-                max_connections=40,
-                max_keepalive_connections=20,
-                keepalive_expiry=120,
-            ),
-            timeout=httpx.Timeout(30.0, connect=10.0),
+        # httpx config для async clients (создаются per-request, но с оптимальными параметрами)
+        self._http_limits = httpx.Limits(
+            max_connections=40,
+            max_keepalive_connections=20,
+            keepalive_expiry=120,
         )
+        self._http_timeout = httpx.Timeout(30.0, connect=10.0)
 
         # Отслеживание свежести данных для UI
         self._last_api_call_ts = 0  # timestamp последнего реального обращения к API
@@ -402,8 +399,7 @@ class FlightSearcher:
 
         sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
 
-        client = self._http_client
-        if True:  # persistent client, no context manager needed
+        async with httpx.AsyncClient(http2=True, limits=self._http_limits, timeout=self._http_timeout) as client:
             # Шаг 1: направления
             print(f"\nПолучение направлений из {self.origin}...")
             dest_params = {
@@ -624,8 +620,7 @@ class FlightSearcher:
 
         sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
 
-        client = self._http_client
-        if True:  # persistent client, no context manager needed
+        async with httpx.AsyncClient(http2=True, limits=self._http_limits, timeout=self._http_timeout) as client:
             # Шаг 1: направления
             print(f"Получение направлений из {self.origin}...")
             dest_params = {
@@ -864,8 +859,7 @@ class FlightSearcher:
 
         sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
 
-        client = self._http_client
-        if True:  # persistent client, no context manager needed
+        async with httpx.AsyncClient(http2=True, limits=self._http_limits, timeout=self._http_timeout) as client:
             # Шаг 1: направления
             dest_params = {
                 "departureAirportIataCode": origin,
@@ -963,8 +957,7 @@ class FlightSearcher:
     ) -> List[Dict]:
         sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
 
-        client = self._http_client
-        if True:  # persistent client, no context manager needed
+        async with httpx.AsyncClient(http2=True, limits=self._http_limits, timeout=self._http_timeout) as client:
             batches = self._build_date_batches(date_from, date_to)
 
             task_list = []
@@ -1058,8 +1051,7 @@ class FlightSearcher:
 
         sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
 
-        client = self._http_client
-        if True:  # persistent client, no context manager needed
+        async with httpx.AsyncClient(http2=True, limits=self._http_limits, timeout=self._http_timeout) as client:
 
             # ══════════════════════════════════════════════════════
             # ФАЗА 0: Вычисляем returnable_set — аэропорты, из
