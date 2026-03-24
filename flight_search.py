@@ -1079,63 +1079,84 @@ class FlightSearcher:
                 """Получает рейсы из аэропорта.
                 only_dests: если задан, фильтруем destinations ПЕРЕД fetch_flights
                 (экономит API-вызовы на последнем хопе).
+                Кэш по (airport, date_from, date_to) — без only_dests чтобы
+                переиспользовать между хопами. only_dests фильтрует destinations
+                до вызова _fetch_flights (экономит API), но не ломает кэш.
                 """
-                cache_key = (airport, date_from, date_to, frozenset(only_dests) if only_dests else None)
-                if cache_key not in flights_cache:
-                    dest_params = {
-                        "departureAirportIataCode": airport,
-                        "outboundDepartureDateFrom": date_from,
-                        "outboundDepartureDateTo": date_to,
-                        "currency": self.config['currency'],
-                    }
-                    destinations = await self._fetch_destinations(client, dest_params)
-                    if excluded_ap:
-                        destinations = {c: i for c, i in destinations.items() if c not in excluded_ap}
-                    if excluded_co:
-                        destinations = {c: i for c, i in destinations.items()
-                                        if i.get('country', '') not in excluded_co}
-                    # Фильтр на последний хоп: только returnable аэропорты
-                    if only_dests is not None:
-                        destinations = {c: i for c, i in destinations.items() if c in only_dests}
+                # Для кэша: без only_dests, чтобы повторные запросы к тому же
+                # аэропорту (с/без фильтра) переиспользовали данные.
+                # Но если only_dests задан — кэш с полным набором не подходит,
+                # нужен отдельный ключ чтобы не засорять его подмножеством.
+                cache_key = (airport, date_from, date_to)
+                use_full_cache = only_dests is None and cache_key in flights_cache
 
-                    batches = self._build_date_batches(date_from, date_to)
-                    task_list = []
-                    for dest, info in destinations.items():
-                        for batch_date, batch_flex in batches:
-                            task_list.append((
-                                dest, info['name'], info.get('country', ''),
-                                self._fetch_flights(client, sem, airport, dest, info['name'],
-                                                    batch_date, flex_days_out=batch_flex)
-                            ))
+                if use_full_cache:
+                    return [f for f in flights_cache[cache_key]
+                            if f['destination'] not in visited]
 
-                    results = await asyncio.gather(*[t[3] for t in task_list], return_exceptions=True)
+                # Если уже есть полный кэш — фильтруем из него
+                if only_dests is not None and cache_key in flights_cache:
+                    return [f for f in flights_cache[cache_key]
+                            if f['destination'] not in visited and f['destination'] in only_dests]
 
-                    dt_from = datetime.strptime(date_from, '%Y-%m-%d').date()
-                    dt_to = datetime.strptime(date_to, '%Y-%m-%d').date()
-                    all_flights = []
-                    for (dest, name, country, _), result in zip(task_list, results):
-                        if isinstance(result, Exception):
+                dest_params = {
+                    "departureAirportIataCode": airport,
+                    "outboundDepartureDateFrom": date_from,
+                    "outboundDepartureDateTo": date_to,
+                    "currency": self.config['currency'],
+                }
+                destinations = await self._fetch_destinations(client, dest_params)
+                if excluded_ap:
+                    destinations = {c: i for c, i in destinations.items() if c not in excluded_ap}
+                if excluded_co:
+                    destinations = {c: i for c, i in destinations.items()
+                                    if i.get('country', '') not in excluded_co}
+                # Фильтр на последний хоп: только returnable аэропорты
+                if only_dests is not None:
+                    destinations = {c: i for c, i in destinations.items() if c in only_dests}
+
+                batches = self._build_date_batches(date_from, date_to)
+                task_list = []
+                for dest, info in destinations.items():
+                    for batch_date, batch_flex in batches:
+                        task_list.append((
+                            dest, info['name'], info.get('country', ''),
+                            self._fetch_flights(client, sem, airport, dest, info['name'],
+                                                batch_date, flex_days_out=batch_flex)
+                        ))
+
+                results = await asyncio.gather(*[t[3] for t in task_list], return_exceptions=True)
+
+                dt_from = datetime.strptime(date_from, '%Y-%m-%d').date()
+                dt_to = datetime.strptime(date_to, '%Y-%m-%d').date()
+                all_flights = []
+                for (dest, name, country, _), result in zip(task_list, results):
+                    if isinstance(result, Exception):
+                        continue
+                    for f in result:
+                        dep_date = f['departureTime'].date()
+                        if dep_date < dt_from or dep_date > dt_to:
                             continue
-                        for f in result:
-                            dep_date = f['departureTime'].date()
-                            if dep_date < dt_from or dep_date > dt_to:
-                                continue
-                            if f['price'] <= max_price_per_leg:
-                                f['_dest_name'] = name
-                                f['_country'] = country
-                                all_flights.append(f)
+                        if f['price'] <= max_price_per_leg:
+                            f['_dest_name'] = name
+                            f['_country'] = country
+                            all_flights.append(f)
 
-                    seen = set()
-                    unique = []
-                    for f in all_flights:
-                        k = (f['flightNumber'], f['departureTime'])
-                        if k not in seen:
-                            seen.add(k)
-                            unique.append(f)
-                    unique.sort(key=lambda x: x['price'])
+                seen = set()
+                unique = []
+                for f in all_flights:
+                    k = (f['flightNumber'], f['departureTime'])
+                    if k not in seen:
+                        seen.add(k)
+                        unique.append(f)
+                unique.sort(key=lambda x: x['price'])
+
+                # Сохраняем в кэш (без only_dests если это полный набор)
+                if only_dests is None:
                     flights_cache[cache_key] = unique
-
-                return [f for f in flights_cache[cache_key] if f['destination'] not in visited]
+                    return [f for f in unique if f['destination'] not in visited]
+                else:
+                    return [f for f in unique if f['destination'] not in visited]
 
             # ══════════════════════════════════════════════════════
             # ФАЗА 1: Forward BFS с ограничением последнего хопа
