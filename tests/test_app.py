@@ -74,7 +74,7 @@ class TestSearchRegular:
         resp = c.get('/?mode=regular&nights=1')
         html = resp.data.decode()
         assert resp.status_code == 200
-        assert 'Укажите дату' in html
+        assert 'alert-error' in html
 
     def test_search_passes_excluded_countries(self, client):
         c, mock = client
@@ -113,6 +113,52 @@ class TestSearchRegular:
         c.get('/?mode=regular&departure_date=2026-05-20&nights=1&max_price=75')
         call_kwargs = mock.search_flights.call_args[1]
         assert call_kwargs['max_price_override'] == 75
+
+
+class TestNomadAPI:
+    """Тесты API endpoint /api/nomad/options."""
+
+    def test_nomad_options_passes_dates_to_searcher(self, client):
+        """Проверяем что API передаёт date_from/date_to в searcher без изменений."""
+        c, mock = client
+        mock.search_nomad_options.return_value = []
+
+        c.get('/api/nomad/options?origin=VLC&date_from=2026-05-18&date_to=2026-05-18&max_leg_price=100&top_n=20')
+        call_kwargs = mock.search_nomad_options.call_args[1]
+        assert call_kwargs['date_from'] == '2026-05-18'
+        assert call_kwargs['date_to'] == '2026-05-18'
+
+    def test_nomad_options_two_nights_date_range(self, client):
+        """arrival=May 19, nights=2 → frontend отправит date_from=date_to=May 21."""
+        c, mock = client
+        mock.search_nomad_options.return_value = [
+            {
+                'destination': 'CTA', 'destination_name': 'Catania', 'country': 'Italy',
+                'flight_number': 'FR 3736', 'price': 15.0, 'currency': 'EUR',
+                'departure_time': '2026-05-21T10:00:00', 'arrival_time': '2026-05-21T11:00:00',
+            }
+        ]
+
+        resp = c.get('/api/nomad/options?origin=PMO&date_from=2026-05-21&date_to=2026-05-21&max_leg_price=100&top_n=20')
+        data = resp.get_json()
+        assert resp.status_code == 200
+        assert len(data['options']) == 1
+        assert data['options'][0]['departure_time'][:10] == '2026-05-21'
+
+    def test_nomad_options_missing_params(self, client):
+        c, _ = client
+        resp = c.get('/api/nomad/options?origin=VLC')
+        assert resp.status_code == 400
+
+    def test_nomad_options_exclusions(self, client):
+        c, mock = client
+        mock.search_nomad_options.return_value = []
+
+        c.get('/api/nomad/options?origin=VLC&date_from=2026-05-18&date_to=2026-05-18&max_leg_price=100&top_n=20&excl_countries=Spain&excl_airports=AGP,PMI')
+        call_kwargs = mock.search_nomad_options.call_args[1]
+        assert 'Spain' in call_kwargs['excluded_countries']
+        assert 'AGP' in call_kwargs['excluded_airports']
+        assert 'PMI' in call_kwargs['excluded_airports']
 
 
 class TestFreshnessIndicator:

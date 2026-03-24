@@ -336,7 +336,8 @@ class FlightSearcher:
         excluded_countries_override: List[str] = None,
         origin_override: str = None,
         flex_days_override: int = None,
-        max_price_override: int = None
+        max_price_override: int = None,
+        destination_override: str = None,
     ) -> List[Dict]:
         """Синхронная обёртка для async поиска рейсов."""
         self._served_from_stale = False
@@ -346,14 +347,15 @@ class FlightSearcher:
         try:
             return asyncio.run(self._async_search_flights(
                 departure_date, nights, excluded_airports_override,
-                excluded_countries_override, flex_days_override, max_price_override
+                excluded_countries_override, flex_days_override, max_price_override,
+                destination_override=destination_override,
             ))
         finally:
             self.origin = original_origin
 
     async def _async_search_flights(self, departure_date, nights, excluded_airports_override,
                                      excluded_countries_override=None, flex_days_override=None,
-                                     max_price_override=None):
+                                     max_price_override=None, destination_override=None):
         all_results = []
 
         excluded_airports = set(self.config.get('excluded_airports', []))
@@ -399,6 +401,11 @@ class FlightSearcher:
             if excluded_countries:
                 destinations = {c: i for c, i in destinations.items()
                                 if i.get('country', '') not in excluded_countries}
+
+            # Фильтрация по конкретному направлению
+            if destination_override:
+                dest_upper = destination_override.upper()
+                destinations = {c: i for c, i in destinations.items() if c == dest_upper}
 
             print(f"Найдено {len(destinations)} направлений")
             if not destinations:
@@ -799,6 +806,542 @@ class FlightSearcher:
             if cached is not None:
                 return cached
             return {}
+
+    # ── Nomad mode ─────────────────────────────────────────────
+
+    def search_nomad_options(
+        self,
+        origin: str,
+        date_from: str,
+        date_to: str,
+        max_price_per_leg: int = 50,
+        top_n: int = 10,
+        excluded_airports: List[str] = None,
+        excluded_countries: List[str] = None,
+    ) -> List[Dict]:
+        """Возвращает top-N дешёвых one-way рейсов из указанного аэропорта."""
+        self._served_from_stale = False
+        return asyncio.run(self._async_search_nomad_options(
+            origin, date_from, date_to, max_price_per_leg, top_n,
+            excluded_airports, excluded_countries,
+        ))
+
+    async def _async_search_nomad_options(
+        self, origin, date_from, date_to, max_price_per_leg, top_n,
+        excluded_airports, excluded_countries,
+    ) -> List[Dict]:
+        excluded_ap = set(self.config.get('excluded_airports', []))
+        if excluded_airports:
+            excluded_ap.update(excluded_airports)
+
+        excluded_co = set(self.config.get('excluded_countries', []))
+        if excluded_countries:
+            excluded_co.update(excluded_countries)
+
+        sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
+
+        async with httpx.AsyncClient(http2=True) as client:
+            # Шаг 1: направления
+            dest_params = {
+                "departureAirportIataCode": origin,
+                "outboundDepartureDateFrom": date_from,
+                "outboundDepartureDateTo": date_to,
+                "currency": self.config['currency'],
+            }
+            destinations = await self._fetch_destinations(client, dest_params)
+
+            # Фильтрация
+            if excluded_ap:
+                destinations = {c: i for c, i in destinations.items() if c not in excluded_ap}
+            if excluded_co:
+                destinations = {c: i for c, i in destinations.items()
+                                if i.get('country', '') not in excluded_co}
+
+            if not destinations:
+                return []
+
+            # Шаг 2: рейсы параллельно (батчами)
+            batches = self._build_date_batches(date_from, date_to)
+            task_list = []
+            for dest, info in destinations.items():
+                for batch_date, batch_flex in batches:
+                    task_list.append((
+                        dest, info['name'], info.get('country', ''),
+                        self._fetch_flights(client, sem, origin, dest, info['name'],
+                                            batch_date, flex_days_out=batch_flex)
+                    ))
+
+            results = await asyncio.gather(
+                *[t[3] for t in task_list], return_exceptions=True
+            )
+
+            # Собираем все рейсы, фильтруем по дате и цене
+            dt_from = datetime.strptime(date_from, '%Y-%m-%d').date()
+            dt_to = datetime.strptime(date_to, '%Y-%m-%d').date()
+            all_flights = []
+            dest_info = {}
+            for (dest, name, country, _), result in zip(task_list, results):
+                dest_info[dest] = {'name': name, 'country': country}
+                if isinstance(result, Exception):
+                    continue
+                for f in result:
+                    dep_date = f['departureTime'].date()
+                    if dep_date < dt_from or dep_date > dt_to:
+                        continue
+                    if f['price'] <= max_price_per_leg:
+                        all_flights.append(f)
+
+            # Дедупликация
+            seen = set()
+            unique = []
+            for f in all_flights:
+                key = (f['flightNumber'], f['departureTime'])
+                if key not in seen:
+                    seen.add(key)
+                    unique.append(f)
+
+            # Сортируем по цене, берём top_n
+            unique.sort(key=lambda x: x['price'])
+            top = unique[:top_n]
+
+            # Сериализуем для JSON
+            serialized = []
+            for f in top:
+                serialized.append({
+                    'destination': f['destination'],
+                    'destination_name': f.get('destinationName', f['destination']),
+                    'country': dest_info.get(f['destination'], {}).get('country', ''),
+                    'flight_number': f['flightNumber'],
+                    'departure_time': f['departureTime'].isoformat(),
+                    'arrival_time': f['arrivalTime'].isoformat(),
+                    'price': f['price'],
+                    'currency': f['currency'],
+                })
+            return serialized
+
+    def search_nomad_return(
+        self,
+        origin: str,
+        destination: str,
+        date_from: str,
+        date_to: str,
+        max_price: int = 50,
+    ) -> List[Dict]:
+        """Ищет обратные рейсы origin → destination в диапазоне дат."""
+        self._served_from_stale = False
+        return asyncio.run(self._async_search_nomad_return(
+            origin, destination, date_from, date_to, max_price,
+        ))
+
+    async def _async_search_nomad_return(
+        self, origin, destination, date_from, date_to, max_price,
+    ) -> List[Dict]:
+        sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
+
+        async with httpx.AsyncClient(http2=True) as client:
+            batches = self._build_date_batches(date_from, date_to)
+
+            task_list = []
+            for batch_date, batch_flex in batches:
+                task_list.append(
+                    self._fetch_flights(client, sem, origin, destination, '',
+                                        batch_date, flex_days_out=batch_flex)
+                )
+
+            results = await asyncio.gather(*task_list, return_exceptions=True)
+
+            dt_from = datetime.strptime(date_from, '%Y-%m-%d').date()
+            dt_to = datetime.strptime(date_to, '%Y-%m-%d').date()
+            all_flights = []
+            for result in results:
+                if isinstance(result, Exception):
+                    continue
+                for f in result:
+                    dep_date = f['departureTime'].date()
+                    if dep_date < dt_from or dep_date > dt_to:
+                        continue
+                    if f['price'] <= max_price:
+                        all_flights.append(f)
+
+            # Дедупликация
+            seen = set()
+            unique = []
+            for f in all_flights:
+                key = (f['flightNumber'], f['departureTime'])
+                if key not in seen:
+                    seen.add(key)
+                    unique.append(f)
+
+            unique.sort(key=lambda x: (x['price'], x['departureTime']))
+
+            serialized = []
+            for f in unique:
+                serialized.append({
+                    'destination': f['destination'],
+                    'destination_name': f.get('destinationName', f['destination']),
+                    'flight_number': f['flightNumber'],
+                    'departure_time': f['departureTime'].isoformat(),
+                    'arrival_time': f['arrivalTime'].isoformat(),
+                    'price': f['price'],
+                    'currency': f['currency'],
+                })
+            return serialized
+
+    # ── Nomad auto-routes ───────────────────────────────────────
+
+    def search_nomad_routes(
+        self,
+        origin: str,
+        departure_date: str,
+        hops: int = 2,
+        nights_per_city: List[int] = None,
+        max_price_per_leg: int = 50,
+        top_n: int = 10,
+        excluded_airports: List[str] = None,
+        excluded_countries: List[str] = None,
+    ) -> List[Dict]:
+        """Автоматический поиск nomad-маршрутов с возвратом в origin.
+
+        Строит маршруты: origin → city1 → city2 → ... → origin
+        Количество промежуточных городов = hops.
+        Возврат в origin всегда включён.
+        """
+        self._served_from_stale = False
+        if nights_per_city is None:
+            nights_per_city = [1, 2, 3]
+        hops = max(1, min(hops, 4))  # clamp 1-4
+        return asyncio.run(self._async_search_nomad_routes(
+            origin, departure_date, hops, nights_per_city,
+            max_price_per_leg, top_n,
+            excluded_airports, excluded_countries,
+        ))
+
+    async def _async_search_nomad_routes(
+        self, origin, departure_date, hops, nights_per_city,
+        max_price_per_leg, top_n, excluded_airports, excluded_countries,
+    ) -> List[Dict]:
+        min_nights = min(nights_per_city)
+        max_nights = max(nights_per_city)
+
+        excluded_ap = set(self.config.get('excluded_airports', []))
+        if excluded_airports:
+            excluded_ap.update(excluded_airports)
+        excluded_co = set(self.config.get('excluded_countries', []))
+        if excluded_countries:
+            excluded_co.update(excluded_countries)
+
+        sem = asyncio.Semaphore(self.MAX_CONCURRENCY)
+
+        async with httpx.AsyncClient(http2=True) as client:
+
+            # ══════════════════════════════════════════════════════
+            # ФАЗА 0: Вычисляем returnable_set — аэропорты, из
+            # которых можно вернуться в origin.
+            #
+            # Ryanair маршруты бидирекциональны: если origin летает
+            # в X, то X летает обратно в origin. Поэтому
+            # _fetch_destinations(origin) даёт нам returnable_set.
+            #
+            # Оцениваем окно дат возврата для широкого диапазона,
+            # чтобы не пропустить варианты.
+            # ══════════════════════════════════════════════════════
+
+            departure_dt = datetime.strptime(departure_date, '%Y-%m-%d')
+            earliest_return = (departure_dt + timedelta(days=hops * min_nights)).strftime('%Y-%m-%d')
+            latest_return = (departure_dt + timedelta(days=hops * max_nights + max_nights)).strftime('%Y-%m-%d')
+
+            ret_dest_params = {
+                "departureAirportIataCode": origin,
+                "outboundDepartureDateFrom": earliest_return,
+                "outboundDepartureDateTo": latest_return,
+                "currency": self.config['currency'],
+            }
+            returnable_dests = await self._fetch_destinations(client, ret_dest_params)
+            returnable_set = set(returnable_dests.keys())
+            # Убираем excluded
+            returnable_set -= excluded_ap
+            if excluded_co:
+                returnable_set = {c for c in returnable_set
+                                  if returnable_dests.get(c, {}).get('country', '') not in excluded_co}
+
+            print(f"[nomad] Returnable airports from {origin}: {len(returnable_set)}")
+            if not returnable_set:
+                print(f"[nomad] No returnable airports found, aborting")
+                return []
+
+            # ══════════════════════════════════════════════════════
+            # Кэш рейсов + helper
+            # ══════════════════════════════════════════════════════
+
+            flights_cache = {}
+
+            async def get_flights_from(airport, date_from, date_to, visited, only_dests=None):
+                """Получает рейсы из аэропорта.
+                only_dests: если задан, фильтруем destinations ПЕРЕД fetch_flights
+                (экономит API-вызовы на последнем хопе).
+                """
+                cache_key = (airport, date_from, date_to, frozenset(only_dests) if only_dests else None)
+                if cache_key not in flights_cache:
+                    dest_params = {
+                        "departureAirportIataCode": airport,
+                        "outboundDepartureDateFrom": date_from,
+                        "outboundDepartureDateTo": date_to,
+                        "currency": self.config['currency'],
+                    }
+                    destinations = await self._fetch_destinations(client, dest_params)
+                    if excluded_ap:
+                        destinations = {c: i for c, i in destinations.items() if c not in excluded_ap}
+                    if excluded_co:
+                        destinations = {c: i for c, i in destinations.items()
+                                        if i.get('country', '') not in excluded_co}
+                    # Фильтр на последний хоп: только returnable аэропорты
+                    if only_dests is not None:
+                        destinations = {c: i for c, i in destinations.items() if c in only_dests}
+
+                    batches = self._build_date_batches(date_from, date_to)
+                    task_list = []
+                    for dest, info in destinations.items():
+                        for batch_date, batch_flex in batches:
+                            task_list.append((
+                                dest, info['name'], info.get('country', ''),
+                                self._fetch_flights(client, sem, airport, dest, info['name'],
+                                                    batch_date, flex_days_out=batch_flex)
+                            ))
+
+                    results = await asyncio.gather(*[t[3] for t in task_list], return_exceptions=True)
+
+                    dt_from = datetime.strptime(date_from, '%Y-%m-%d').date()
+                    dt_to = datetime.strptime(date_to, '%Y-%m-%d').date()
+                    all_flights = []
+                    for (dest, name, country, _), result in zip(task_list, results):
+                        if isinstance(result, Exception):
+                            continue
+                        for f in result:
+                            dep_date = f['departureTime'].date()
+                            if dep_date < dt_from or dep_date > dt_to:
+                                continue
+                            if f['price'] <= max_price_per_leg:
+                                f['_dest_name'] = name
+                                f['_country'] = country
+                                all_flights.append(f)
+
+                    seen = set()
+                    unique = []
+                    for f in all_flights:
+                        k = (f['flightNumber'], f['departureTime'])
+                        if k not in seen:
+                            seen.add(k)
+                            unique.append(f)
+                    unique.sort(key=lambda x: x['price'])
+                    flights_cache[cache_key] = unique
+
+                return [f for f in flights_cache[cache_key] if f['destination'] not in visited]
+
+            # ══════════════════════════════════════════════════════
+            # ФАЗА 1: Forward BFS с ограничением последнего хопа
+            # ══════════════════════════════════════════════════════
+
+            # Первый хоп из origin
+            is_single_hop = (hops == 1)
+            first_filter = returnable_set if is_single_hop else None
+            first_flights = await get_flights_from(origin, departure_date, departure_date,
+                                                    {origin}, only_dests=first_filter)
+            first_flights = first_flights[:top_n * 3]
+
+            if is_single_hop:
+                print(f"[nomad] 1-hop mode: {len(first_flights)} flights to returnable cities")
+
+            partial_routes = []
+            for f in first_flights:
+                arr_date = f['arrivalTime'].strftime('%Y-%m-%d')
+                leg = {
+                    'flight': f, 'dest': f['destination'],
+                    'dest_name': f.get('_dest_name', f['destination']),
+                    'country': f.get('_country', ''),
+                    'arrival_date': arr_date,
+                }
+                partial_routes.append(([leg], f['price'], {origin, f['destination']}))
+
+            # Промежуточные хопы
+            for hop_idx in range(1, hops):
+                is_last_hop = (hop_idx == hops - 1)
+                next_routes = []
+
+                by_airport_date = {}
+                for route_idx, (legs, total, visited) in enumerate(partial_routes):
+                    last = legs[-1]
+                    for stay in nights_per_city:
+                        dep_dt = datetime.strptime(last['arrival_date'], '%Y-%m-%d') + timedelta(days=stay)
+                        dep_date = dep_dt.strftime('%Y-%m-%d')
+                        key = (last['dest'], dep_date, dep_date)
+                        if key not in by_airport_date:
+                            by_airport_date[key] = []
+                        by_airport_date[key].append((route_idx, stay))
+
+                # Fetch рейсы. На последнем хопе — только в returnable аэропорты.
+                hop_filter = returnable_set if is_last_hop else None
+                fetch_tasks = {}
+                for key in by_airport_date:
+                    airport, df, dt = key
+                    fetch_tasks[key] = get_flights_from(airport, df, dt, set(), only_dests=hop_filter)
+
+                fetched = {}
+                keys_list = list(fetch_tasks.keys())
+                results = await asyncio.gather(*[fetch_tasks[k] for k in keys_list], return_exceptions=True)
+                for k, r in zip(keys_list, results):
+                    fetched[k] = r if not isinstance(r, Exception) else []
+
+                if is_last_hop:
+                    total_filtered = sum(len(v) for v in fetched.values())
+                    print(f"[nomad] Last hop: {total_filtered} flights to returnable cities only")
+
+                for key, route_indices in by_airport_date.items():
+                    flights = fetched.get(key, [])
+                    for route_idx, stay in route_indices:
+                        legs, total, visited = partial_routes[route_idx]
+                        for f in flights[:top_n]:
+                            if f['destination'] in visited:
+                                continue
+                            arr_date = f['arrivalTime'].strftime('%Y-%m-%d')
+                            new_leg = {
+                                'flight': f, 'dest': f['destination'],
+                                'dest_name': f.get('_dest_name', f['destination']),
+                                'country': f.get('_country', ''),
+                                'arrival_date': arr_date,
+                            }
+                            new_legs = legs + [new_leg]
+                            new_legs[-2] = {**new_legs[-2], 'stay_nights': stay}
+                            next_routes.append((new_legs, total + f['price'], visited | {f['destination']}))
+
+                next_routes.sort(key=lambda x: x[1])
+                partial_routes = next_routes[:top_n * 20]
+
+            if not partial_routes:
+                return []
+
+            print(f"[nomad] {len(partial_routes)} routes to validate return flights for")
+
+            # ══════════════════════════════════════════════════════
+            # ФАЗА 2: Поиск обратных рейсов (только для маршрутов,
+            # заканчивающихся в returnable аэропортах)
+            # ══════════════════════════════════════════════════════
+
+            return_tasks = {}
+            for idx, (legs, total, visited) in enumerate(partial_routes):
+                last = legs[-1]
+                for stay in nights_per_city:
+                    dep_dt = datetime.strptime(last['arrival_date'], '%Y-%m-%d') + timedelta(days=stay)
+                    dep_date = dep_dt.strftime('%Y-%m-%d')
+                    key = (last['dest'], dep_date)
+                    if key not in return_tasks:
+                        return_tasks[key] = None
+
+            async def fetch_return(airport, date):
+                batches = self._build_date_batches(date, date)
+                tasks = []
+                for batch_date, batch_flex in batches:
+                    tasks.append(self._fetch_flights(client, sem, airport, origin, '',
+                                                     batch_date, flex_days_out=batch_flex))
+                results = await asyncio.gather(*tasks, return_exceptions=True)
+                flights = []
+                target_date = datetime.strptime(date, '%Y-%m-%d').date()
+                for r in results:
+                    if isinstance(r, Exception):
+                        continue
+                    for f in r:
+                        if f['departureTime'].date() == target_date and f['price'] <= max_price_per_leg:
+                            flights.append(f)
+                flights.sort(key=lambda x: x['price'])
+                return flights
+
+            print(f"[nomad] Fetching return flights for {len(return_tasks)} (airport, date) pairs")
+            ret_keys = list(return_tasks.keys())
+            ret_results = await asyncio.gather(*[fetch_return(k[0], k[1]) for k in ret_keys],
+                                               return_exceptions=True)
+            for k, r in zip(ret_keys, ret_results):
+                return_tasks[k] = r if not isinstance(r, Exception) else []
+
+            # ══════════════════════════════════════════════════════
+            # ФАЗА 3: Собираем полные маршруты с возвратом
+            # ══════════════════════════════════════════════════════
+
+            complete_routes = []
+            for legs, total, visited in partial_routes:
+                last = legs[-1]
+                best_return = None
+                best_stay = None
+                for stay in nights_per_city:
+                    dep_dt = datetime.strptime(last['arrival_date'], '%Y-%m-%d') + timedelta(days=stay)
+                    dep_date = dep_dt.strftime('%Y-%m-%d')
+                    key = (last['dest'], dep_date)
+                    ret_flights = return_tasks.get(key, [])
+                    if ret_flights:
+                        cheapest = ret_flights[0]
+                        if best_return is None or cheapest['price'] < best_return['price']:
+                            best_return = cheapest
+                            best_stay = stay
+
+                if not best_return:
+                    continue  # Бидирекциональность не сработала — отсекаем
+
+                final_legs = list(legs)
+                final_legs[-1] = {**final_legs[-1], 'stay_nights': best_stay}
+                final_total = total + best_return['price']
+
+                complete_routes.append({
+                    'legs': final_legs,
+                    'return_flight': best_return,
+                    'total_price': round(final_total, 2),
+                    'currency': self.config['currency'],
+                })
+
+            print(f"[nomad] {len(complete_routes)} complete routes with return")
+
+            complete_routes.sort(key=lambda x: x['total_price'])
+            seen_routes = set()
+            unique_routes = []
+            for route in complete_routes:
+                cities = tuple(l['dest'] for l in route['legs'])
+                price_bucket = round(route['total_price'])
+                key = (cities, price_bucket)
+                if key not in seen_routes:
+                    seen_routes.add(key)
+                    unique_routes.append(route)
+                if len(unique_routes) >= top_n:
+                    break
+
+            # Сериализация
+            serialized = []
+            for route in unique_routes:
+                legs_ser = []
+                for leg in route['legs']:
+                    f = leg['flight']
+                    legs_ser.append({
+                        'destination': leg['dest'],
+                        'destination_name': leg['dest_name'],
+                        'country': leg['country'],
+                        'flight_number': f['flightNumber'],
+                        'departure_time': f['departureTime'].isoformat(),
+                        'arrival_time': f['arrivalTime'].isoformat(),
+                        'price': f['price'],
+                        'currency': f['currency'],
+                        'stay_nights': leg.get('stay_nights', min_nights),
+                    })
+                rf = route['return_flight']
+                serialized.append({
+                    'origin': origin,
+                    'legs': legs_ser,
+                    'return_flight': {
+                        'flight_number': rf['flightNumber'],
+                        'departure_time': rf['departureTime'].isoformat(),
+                        'arrival_time': rf['arrivalTime'].isoformat(),
+                        'price': rf['price'],
+                        'currency': rf['currency'],
+                    },
+                    'total_price': route['total_price'],
+                    'currency': route['currency'],
+                })
+            return serialized
 
     # ── Output ────────────────────────────────────────────────
 

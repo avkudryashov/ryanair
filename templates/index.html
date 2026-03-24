@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Поиск дешёвых рейсов Ryanair — билеты от {{ max_price }} EUR</title>
-    <meta name="description" content="Поиск самых дешёвых рейсов Ryanair с гибкими датами. Находите авиабилеты из любого аэропорта Ryanair по лучшим ценам.">
+    <title>{{ _('page_title', max_price=max_price) }}</title>
+    <meta name="description" content="{{ _('meta_description') }}">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ request.url_root }}">
 
     {# Open Graph #}
-    <meta property="og:title" content="Поиск дешёвых рейсов Ryanair">
-    <meta property="og:description" content="Находите самые дешёвые рейсы Ryanair с гибкими датами и фильтрами.">
+    <meta property="og:title" content="{{ _('og_title') }}">
+    <meta property="og:description" content="{{ _('og_description') }}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.url_root }}">
-    <meta property="og:locale" content="ru_RU">
+    <meta property="og:locale" content="{{ og_locale }}">
 
     {# JSON-LD structured data #}
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Ryanair Flight Search",
-        "description": "Поиск самых дешёвых рейсов Ryanair с гибкими датами",
+        "name": "Ryanair FlyNomad",
+        "description": "{{ _('jsonld_description') }}",
         "applicationCategory": "TravelApplication",
         "operatingSystem": "Any",
         "offers": {
@@ -306,6 +306,161 @@
         .ms-item.country-item { font-weight: 600; background: var(--bg); border-top: 1px solid var(--border); }
         .ms-item.airport-item { padding-left: 32px; font-weight: 400; }
 
+        /* ── View toggle ── */
+        .view-toggle {
+            display: inline-flex;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            margin-left: auto;
+        }
+        .view-toggle-btn {
+            padding: 4px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: var(--font);
+            border: none;
+            background: var(--surface);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .view-toggle-btn:not(:last-child) { border-right: 1px solid var(--border); }
+        .view-toggle-btn.active { background: var(--brand); color: #fff; }
+        .view-toggle-btn:hover:not(.active) { background: var(--surface-hover); color: var(--text); }
+
+        /* ── Flow diagram ── */
+        .flow-list { display: flex; flex-direction: column; gap: 16px; }
+        .flow-item {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding: 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+        .flow-node {
+            flex-shrink: 0;
+            min-width: 100px;
+            padding: 10px 16px;
+            border: 2px solid var(--brand);
+            border-radius: var(--radius-sm);
+            background: var(--brand-subtle);
+            text-align: center;
+        }
+        .flow-node-code {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--brand);
+        }
+        .flow-node-name {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .flow-node-nights {
+            margin-top: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .flow-edge {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 8px;
+            position: relative;
+            min-width: 130px;
+        }
+        .flow-edge-line {
+            width: 100%;
+            height: 2px;
+            background: var(--brand);
+            position: relative;
+        }
+        .flow-edge-line::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: -5px;
+            border: 6px solid transparent;
+            border-left-color: var(--brand);
+        }
+        .flow-edge-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            text-align: center;
+            line-height: 1.4;
+        }
+        .flow-edge-price {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--brand);
+        }
+        .flow-edge-flight {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+        .flow-total {
+            flex-shrink: 0;
+            margin-left: 16px;
+            padding: 8px 16px;
+            background: var(--success-bg);
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+        .flow-total-price {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--success);
+        }
+        .flow-total-label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .flow-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0;
+            }
+            .flow-node {
+                min-width: auto;
+            }
+            .flow-edge {
+                min-width: auto;
+                padding: 8px 0;
+                flex-direction: row;
+                gap: 8px;
+            }
+            .flow-edge-line {
+                width: 2px;
+                height: 30px;
+                min-height: 30px;
+            }
+            .flow-edge-line::after {
+                right: auto;
+                top: auto;
+                bottom: -1px;
+                left: -5px;
+                border: 6px solid transparent;
+                border-top-color: var(--brand);
+                border-left-color: transparent;
+            }
+            .flow-total {
+                margin-left: 0;
+                margin-top: 8px;
+            }
+        }
+
         /* ── Results area ── */
         #results-area { min-height: 100px; }
 
@@ -516,6 +671,26 @@
             .card-flights { grid-template-columns: 1fr; }
         }
 
+        /* ── Language switcher ── */
+        .lang-switcher {
+            margin-left: auto;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .lang-link {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text-muted);
+            transition: all var(--transition);
+            letter-spacing: 0.03em;
+        }
+        .lang-link:hover { color: var(--brand); background: var(--brand-subtle); }
+        .lang-link.active { color: var(--brand); background: var(--brand-subtle); }
+
         /* ── Skip link (a11y) ── */
         .skip-link {
             position: absolute;
@@ -531,39 +706,126 @@
         }
         .skip-link:focus { top: 16px; }
 
+        /* ── Mode tabs ── */
+        .mode-tabs { display: flex; gap: 0; margin-bottom: -1px; position: relative; z-index: 1; }
+        .mode-tab {
+            padding: 10px 24px; font-size: 14px; font-weight: 600; font-family: var(--font);
+            background: var(--bg); color: var(--text-muted); border: 1px solid var(--border);
+            border-bottom: none; border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            cursor: pointer; transition: all var(--transition);
+        }
+        .mode-tab:hover { color: var(--text); background: var(--surface-hover); }
+        .mode-tab.active { background: var(--surface); color: var(--brand); border-bottom: 1px solid var(--surface); }
+
+        /* ── (legacy mode visibility removed — unified UI) ── */
+
+        .tree-root { padding: 8px 0; }
+        .tree-origin {
+            font-size: 16px; font-weight: 700; padding: 12px 16px;
+            background: var(--brand-subtle); border-radius: var(--radius-sm);
+            display: inline-flex; align-items: center; gap: 8px; margin-bottom: 8px;
+        }
+        .tree-origin .code { color: var(--brand); font-family: var(--font-mono); }
+        .tree-node { margin-left: 28px; padding-left: 20px; border-left: 2px solid var(--border); position: relative; }
+        .tree-node:last-child { border-left-color: transparent; }
+        .tree-node::before {
+            content: ''; position: absolute; left: -2px; top: 0; width: 20px; height: 20px;
+            border-bottom: 2px solid var(--border); border-left: 2px solid var(--border); border-bottom-left-radius: 8px;
+        }
+        .tree-node:last-child::before { border-left-color: var(--border); }
+        .flight-option {
+            display: flex; align-items: center; gap: 12px; padding: 10px 14px; margin: 4px 0;
+            border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--border);
+            cursor: pointer; transition: all var(--transition);
+        }
+        .flight-option:hover { border-color: var(--brand); background: var(--surface-hover); }
+        .flight-option.selected { border-color: var(--brand); background: var(--brand-subtle); }
+        .flight-option input[type=checkbox] { accent-color: var(--brand); width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+        .fo-dest { font-weight: 600; min-width: 140px; }
+        .fo-dest .code { color: var(--text-muted); font-size: 12px; font-family: var(--font-mono); margin-left: 4px; }
+        .fo-dest .country { display: block; font-size: 11px; font-weight: 400; color: var(--text-muted); }
+        .fo-price { font-weight: 700; color: var(--brand); white-space: nowrap; min-width: 70px; }
+        .fo-time { font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
+        .fo-time .arrow { margin: 0 4px; color: var(--text-muted); }
+        .fo-flight { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+        .fo-date { font-size: 12px; color: var(--text-secondary); min-width: 75px; }
+        .tree-loading { padding: 12px 16px; color: var(--text-muted); font-size: 13px; display: flex; align-items: center; gap: 8px; }
+        .tree-loading .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .tree-empty { padding: 12px 16px; color: var(--text-muted); font-size: 13px; font-style: italic; }
+        .tree-actions { margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn-nomad {
+            padding: 10px 28px; border: none; border-radius: var(--radius-sm); font-size: 14px;
+            font-weight: 600; font-family: var(--font); cursor: pointer; transition: all var(--transition); min-height: 40px;
+        }
+        .btn-nomad:hover { filter: brightness(1.15); }
+        .btn-nomad:active { transform: scale(0.98); }
+        .btn-nomad.primary { background: var(--brand); color: #fff; }
+        .btn-nomad.secondary { background: var(--surface); color: var(--brand); border: 1px solid var(--brand); }
+        .btn-nomad.secondary:hover { background: var(--brand-subtle); }
+        .btn-nomad.success { background: var(--success); color: #fff; }
+        .nomad-return-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+        .nomad-return-row input[type=checkbox] { accent-color: var(--brand); width: 18px; height: 18px; cursor: pointer; }
+        .nomad-return-row label { font-size: 14px; cursor: pointer; }
+
+        /* ── Nomad summary ── */
+        .route-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
+        .route-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
+        .route-title { font-size: 16px; font-weight: 700; }
+        .route-price { font-size: 20px; font-weight: 700; color: var(--brand); }
+        .route-leg { display: flex; align-items: center; gap: 16px; padding: 8px 0; font-size: 14px; }
+        .route-leg + .route-leg { border-top: 1px solid var(--border); }
+        .leg-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .leg-icon.hop { background: var(--info-bg); color: var(--info); }
+        .leg-icon.ret { background: var(--success-bg); color: var(--success); }
+        .leg-from-to { font-weight: 600; min-width: 120px; }
+        .leg-details { color: var(--text-secondary); font-size: 13px; }
+        .leg-price { font-weight: 600; color: var(--brand); margin-left: auto; white-space: nowrap; }
+        .route-stay { padding: 4px 0 4px 44px; font-size: 12px; color: var(--text-muted); }
+
+        @media (max-width: 768px) {
+            .tree-node { margin-left: 16px; padding-left: 14px; }
+            .flight-option { flex-wrap: wrap; gap: 8px; }
+            .fo-dest { min-width: 100%; }
+            .route-leg { flex-wrap: wrap; gap: 8px; }
+            .mode-tabs { gap: 0; }
+            .mode-tab { padding: 8px 16px; font-size: 13px; }
+        }
+
         /* ── View transition ── */
         @view-transition { navigation: auto; }
     </style>
 </head>
 <body>
-    <a href="#results-area" class="skip-link">Перейти к результатам</a>
+    <a href="#results-area" class="skip-link">{{ _('skip_to_results') }}</a>
 
     <div class="container">
         <header>
             <div class="logo">
-                <div class="logo-icon" aria-hidden="true">R</div>
+                <div class="logo-icon" aria-hidden="true">FN</div>
                 <div>
-                    <h1>Ryanair Flight Search</h1>
-                    <p>Поиск дешёвых рейсов с гибкими датами</p>
+                    <h1>Ryanair FlyNomad</h1>
+                    <p>{{ _('subtitle') }}</p>
                 </div>
+                <nav class="lang-switcher" aria-label="Language">
+                    {% for code, name in supported_locales.items() %}
+                    <a href="?lang={{ code }}" class="lang-link {% if lang == code %}active{% endif %}" title="{{ name }}">{{ code.upper() }}</a>
+                    {% endfor %}
+                </nav>
             </div>
         </header>
 
         <main>
-            <section class="search-card" aria-label="Форма поиска">
-                <form id="search-form"
-                      hx-get="/"
-                      hx-target="#results-area"
-                      hx-indicator="#loading-indicator"
-                      hx-push-url="true"
-                      hx-swap="innerHTML transition:true">
-                    <input type="hidden" name="mode" value="regular">
+            <div class="mode-tabs" style="display:none;"></div>
+            <section class="search-card" aria-label="{{ _('search_form') }}">
+                <form id="search-form" onsubmit="return false;">
+                    <input type="hidden" name="lang" value="{{ lang }}">
                     <input type="hidden" name="excl_countries" id="excl-countries-input" value="{{ args.get('excl_countries', '') }}">
                     <input type="hidden" name="excl_airports" id="excl-airports-input" value="{{ args.get('excl_airports', '') }}">
 
                     <div class="form-row">
                         <div class="field field-origin">
-                            <label for="origin-select">Аэропорт вылета</label>
+                            <label for="origin-select">{{ _('origin_airport') }}</label>
                             <select name="origin" id="origin-select">
                                 {% for ap in airports %}
                                 <option value="{{ ap.code }}" {% if args.get('origin', 'VLC') == ap.code %}selected{% endif %}>
@@ -573,41 +835,45 @@
                             </select>
                         </div>
                         <div class="field field-date">
-                            <label for="departure-date">Дата вылета</label>
+                            <label for="departure-date">{{ _('departure_date') }}</label>
                             <div class="date-group">
-                                <button type="button" class="date-arrow" id="date-prev" aria-label="Предыдущий день">&#9664;</button>
+                                <button type="button" class="date-arrow" id="date-prev" aria-label="{{ _('prev_day') }}">&#9664;</button>
                                 <input type="date" name="departure_date" id="departure-date" value="{{ args.get('departure_date', today) }}">
-                                <button type="button" class="date-arrow" id="date-next" aria-label="Следующий день">&#9654;</button>
+                                <button type="button" class="date-arrow" id="date-next" aria-label="{{ _('next_day') }}">&#9654;</button>
                             </div>
                         </div>
                         <div class="field field-small">
-                            <label for="flex-days">&plusmn; дней</label>
-                            <input type="number" name="flex_days" id="flex-days" value="{{ args.get('flex_days', '1') }}" min="0" max="7">
+                            <label for="nomad-hops">{{ _('nomad_hops_label') }}</label>
+                            <input type="number" id="nomad-hops" value="{{ args.get('hops', '1') }}" min="1" max="4">
                         </div>
                         <div class="field field-small">
-                            <label for="nights">Ночей</label>
-                            <input type="text" name="nights" id="nights" value="{{ args.get('nights', '1,2') }}" placeholder="1,2,3">
+                            <label for="nomad-nights">{{ _('nomad_nights_label') }}</label>
+                            <input type="text" id="nomad-nights" value="{{ args.get('nights', '1,2,3') }}" placeholder="1,2,3">
                         </div>
                         <div class="field field-small">
-                            <label for="max-price">Макс. цена</label>
+                            <label for="max-price">{{ _('max_price') }}</label>
                             <input type="number" name="max_price" id="max-price" value="{{ args.get('max_price', max_price) }}" min="1" step="1">
+                        </div>
+                        <div class="field field-small">
+                            <label for="top-n">{{ _('nomad_topn_label') }}</label>
+                            <input type="number" id="top-n" value="{{ args.get('top_n', '10') }}" min="3" max="30">
                         </div>
                         <div class="field field-btn">
                             <label>&nbsp;</label>
-                            <button type="submit" class="btn-search">Найти рейсы</button>
+                            <button type="button" class="btn-search" id="btn-nomad-start">{{ _('nomad_start_btn') }}</button>
                         </div>
                     </div>
 
                     <div class="filters-row">
                         <div class="field">
-                            <label>Исключить страны</label>
+                            <label>{{ _('exclude_countries') }}</label>
                             <div class="multi-select" id="ms-countries">
                                 <div class="ms-btn" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox">
-                                    <span class="ms-text placeholder">Выберите страны…</span>
+                                    <span class="ms-text placeholder">{{ _('select_countries') }}</span>
                                     <span class="arrow" aria-hidden="true">&#9660;</span>
                                 </div>
                                 <div class="ms-panel" role="listbox">
-                                    <input type="text" class="ms-search" placeholder="Поиск…" aria-label="Фильтр стран">
+                                    <input type="text" class="ms-search" placeholder="{{ _('search_placeholder') }}" aria-label="{{ _('filter_countries') }}">
                                     {% for country in countries %}
                                     <label class="ms-item country-item" data-country="{{ country }}" role="option">
                                         <input type="checkbox" value="{{ country }}"> {{ country }}
@@ -618,14 +884,14 @@
                         </div>
 
                         <div class="field">
-                            <label>Исключить аэропорты</label>
+                            <label>{{ _('exclude_airports') }}</label>
                             <div class="multi-select" id="ms-airports">
                                 <div class="ms-btn" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox">
-                                    <span class="ms-text placeholder">Выберите аэропорты…</span>
+                                    <span class="ms-text placeholder">{{ _('select_airports') }}</span>
                                     <span class="arrow" aria-hidden="true">&#9660;</span>
                                 </div>
                                 <div class="ms-panel" role="listbox">
-                                    <input type="text" class="ms-search" placeholder="Поиск…" aria-label="Фильтр аэропортов">
+                                    <input type="text" class="ms-search" placeholder="{{ _('search_placeholder') }}" aria-label="{{ _('filter_airports') }}">
                                     {% for country in countries %}
                                     <label class="ms-item country-item" data-country-group="{{ country }}" role="option">
                                         <input type="checkbox" value="__country__{{ country }}"> {{ country }}
@@ -661,14 +927,28 @@
             </section>
         </main>
 
-        <footer style="margin-top:40px; padding-top:20px; border-top:1px solid var(--border); text-align:center;">
-            <p style="font-size:12px; color:var(--text-muted);">Данные предоставлены Ryanair API. Цены могут отличаться на момент бронирования.</p>
+        <footer style="margin-top:40px; padding-top:20px; border-top:1px solid var(--border); text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <p style="font-size:12px; color:var(--text-muted);">{{ _('footer_text') }}</p>
+            <a href="https://github.com/avkudryashov/ryanair" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); text-decoration:none; transition:color var(--transition);" onmouseover="this.style.color='var(--brand)'" onmouseout="this.style.color='var(--text-muted)'">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                GitHub
+            </a>
         </footer>
     </div>
 
     <script>
         const countryToAirports = {{ country_to_airports | tojson }};
         const airportCoords = {{ airport_coords | tojson }};
+        const I18N = {
+            selected_count: {{ _('selected_count', n='{n}') | tojson }},
+            select_countries: {{ _('select_countries') | tojson }},
+            select_airports: {{ _('select_airports') | tojson }},
+            nomad_searching: {{ _('nomad_searching') | tojson }},
+            nomad_no_routes: {{ _('nomad_no_routes') | tojson }},
+            total_price: {{ _('total_price') | tojson }},
+            nomad_routes_found: {{ _('nomad_routes_found', n='{N}') | tojson }},  // {N} replaced by JS
+            nomad_stay: [{{ _('nomad_stay', n=1) | tojson }}, {{ _('nomad_stay', n=2) | tojson }}, {{ _('nomad_stay', n=5) | tojson }}],
+        };
 
         // ── Geolocation ──
         const originSelect = document.getElementById('origin-select');
@@ -701,7 +981,10 @@
             );
         }
 
-        originSelect.addEventListener('change', () => warmOrigin(originSelect.value));
+        originSelect.addEventListener('change', () => {
+            warmOrigin(originSelect.value);
+            loadDestinations();
+        });
 
         // ── Multi-select ──
         function initMultiSelect(container, hiddenInput, opts = {}) {
@@ -710,7 +993,7 @@
             const search = panel.querySelector('.ms-search');
             const textEl = btn.querySelector('.ms-text');
             const checkboxes = panel.querySelectorAll('input[type=checkbox]');
-            const placeholder = opts.placeholder || 'Выберите…';
+            const placeholder = opts.placeholder || '…';
 
             function updateText() {
                 const checked = [...checkboxes].filter(cb => cb.checked && !cb.value.startsWith('__country__'));
@@ -721,7 +1004,7 @@
                     textEl.textContent = checked.map(cb => cb.parentElement.textContent.trim()).join(', ');
                     textEl.classList.remove('placeholder');
                 } else {
-                    textEl.textContent = `Выбрано: ${checked.length}`;
+                    textEl.textContent = I18N.selected_count.replace('{n}', checked.length);
                     textEl.classList.remove('placeholder');
                 }
             }
@@ -787,7 +1070,7 @@
             document.getElementById('ms-countries'),
             document.getElementById('excl-countries-input'),
             {
-                placeholder: 'Выберите страны…',
+                placeholder: I18N.select_countries,
                 onChangeCallback(cb) {
                     const country = cb.value;
                     const codes = countryToAirports[country] || [];
@@ -808,7 +1091,7 @@
             document.getElementById('ms-airports'),
             document.getElementById('excl-airports-input'),
             {
-                placeholder: 'Выберите аэропорты…',
+                placeholder: I18N.select_airports,
                 onChangeCallback(cb) {
                     if (cb.value.startsWith('__country__')) {
                         const country = cb.value.replace('__country__', '');
@@ -855,7 +1138,6 @@
                 const d = new Date(dateInput.value);
                 d.setDate(d.getDate() + days);
                 dateInput.value = d.toISOString().slice(0, 10);
-                htmx.trigger('#search-form', 'submit');
             }
             document.getElementById('date-prev').addEventListener('click', () => shiftDate(-1));
             document.getElementById('date-next').addEventListener('click', () => shiftDate(1));
@@ -900,6 +1182,118 @@
             });
         }
         initSorting();
+
+        // ── Language switcher: preserve current params ──
+        document.querySelectorAll('.lang-link').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const url = new URL(location.href);
+                url.searchParams.set('lang', link.href.split('lang=')[1]);
+                location.href = url.toString();
+            });
+        });
+
+        // ── Route search ──
+        (function() {
+            const resultsArea = document.getElementById('results-area');
+
+            // ── Nomad auto-routes ──
+            function fmtDate(iso) { return new Date(iso).toLocaleDateString('{{ lang }}', { day: '2-digit', month: '2-digit' }); }
+            function fmtTime(iso) { return iso.slice(11, 16); }
+            function fmtStay(n) {
+                // I18N.nomad_stay = ["1 night", "2 nights", "5 nights"] — pick form & replace number
+                const form = n === 1 ? 0 : (n < 5 ? 1 : 2);
+                const tmpl = I18N.nomad_stay[form];
+                return tmpl.replace(/\d+/, n);
+            }
+
+            async function searchNomadRoutes() {
+                const origin = document.getElementById('origin-select').value;
+                const departureDate = document.getElementById('departure-date').value;
+                const nights = document.getElementById('nomad-nights').value || '1,2,3';
+                const hops = document.getElementById('nomad-hops').value || '2';
+                const maxPrice = document.getElementById('max-price').value || '50';
+                const topN = document.getElementById('top-n').value || '10';
+
+                if (!origin || !departureDate) return;
+
+                const exclCountries = document.getElementById('excl-countries-input').value;
+                const exclAirports = document.getElementById('excl-airports-input').value;
+
+                const p = new URLSearchParams({
+                    origin, departure_date: departureDate,
+                    nights, hops, max_price: maxPrice, top_n: topN,
+                });
+                if (exclCountries) p.set('excl_countries', exclCountries);
+                if (exclAirports) p.set('excl_airports', exclAirports);
+
+                resultsArea.innerHTML = `<div class="tree-loading"><div class="spinner"></div> ${I18N.nomad_searching}</div>`;
+
+                try {
+                    const r = await fetch('/api/nomad/routes?' + p);
+                    const data = await r.json();
+                    if (data.error) {
+                        resultsArea.innerHTML = `<div class="alert alert-error">${data.error}</div>`;
+                        return;
+                    }
+                    renderNomadRoutes(data.routes || [], origin);
+                } catch (e) {
+                    resultsArea.innerHTML = `<div class="alert alert-error">Ошибка: ${e.message}</div>`;
+                }
+            }
+
+            function renderNomadRoutes(routes, origin) {
+                if (!routes.length) {
+                    resultsArea.innerHTML = `<div class="empty-state"><p>${I18N.nomad_no_routes}</p></div>`;
+                    return;
+                }
+
+                let html = `<div class="results-header"><p class="results-count">${I18N.nomad_routes_found.replace('{N}', routes.length)}</p></div>`;
+
+                routes.forEach((route, ri) => {
+                    let legs = '';
+
+                    route.legs.forEach((leg, li) => {
+                        const prev = li === 0 ? origin : route.legs[li - 1].destination;
+                        legs += `<div class="route-leg">`;
+                        legs += `<div class="leg-icon hop">&#9992;</div>`;
+                        legs += `<div class="leg-from-to">${prev} &rarr; ${leg.destination}</div>`;
+                        legs += `<div class="leg-details">${fmtDate(leg.departure_time)} ${fmtTime(leg.departure_time)}&rarr;${fmtTime(leg.arrival_time)} <span style="font-family:var(--font-mono);font-size:11px">${leg.flight_number}</span></div>`;
+                        legs += `<div class="leg-price">${leg.price} ${leg.currency}</div>`;
+                        legs += `</div>`;
+
+                        // Stay info
+                        if (leg.stay_nights) {
+                            legs += `<div class="route-stay">${leg.destination_name} — ${fmtStay(leg.stay_nights)}</div>`;
+                        }
+                    });
+
+                    // Return leg
+                    const rf = route.return_flight;
+                    const lastDest = route.legs[route.legs.length - 1].destination;
+                    legs += `<div class="route-leg">`;
+                    legs += `<div class="leg-icon ret">&#8617;</div>`;
+                    legs += `<div class="leg-from-to">${lastDest} &rarr; ${origin}</div>`;
+                    legs += `<div class="leg-details">${fmtDate(rf.departure_time)} ${fmtTime(rf.departure_time)}&rarr;${fmtTime(rf.arrival_time)} <span style="font-family:var(--font-mono);font-size:11px">${rf.flight_number}</span></div>`;
+                    legs += `<div class="leg-price">${rf.price} ${rf.currency}</div>`;
+                    legs += `</div>`;
+
+                    const cities = route.legs.map(l => l.destination_name).join(' &rarr; ');
+                    html += `<div class="route-card">`;
+                    html += `<div class="route-header">`;
+                    html += `<div class="route-title">${origin} &rarr; ${cities} &rarr; ${origin}</div>`;
+                    html += `<div class="route-price">${route.total_price} ${route.currency}</div>`;
+                    html += `</div>`;
+                    html += legs;
+                    html += `</div>`;
+                });
+
+                resultsArea.innerHTML = html;
+            }
+
+            // ── Nomad start button ──
+            document.getElementById('btn-nomad-start').addEventListener('click', searchNomadRoutes);
+        })();
     </script>
 </body>
 </html>

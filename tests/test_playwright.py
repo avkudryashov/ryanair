@@ -60,6 +60,39 @@ def flask_server():
         mock_searcher.get_data_freshness.return_value = {
             'from_cache': False, 'stale': False, 'age_minutes': 0,
         }
+        mock_searcher.search_nomad_routes.return_value = [{
+            'origin': 'VLC',
+            'legs': [{
+                'destination': 'BGY', 'destination_name': 'Milan Bergamo',
+                'country': 'Italy', 'flight_number': 'FR 123',
+                'departure_time': '2026-05-20T10:00:00',
+                'arrival_time': '2026-05-20T12:00:00',
+                'price': 25.0, 'currency': 'EUR', 'stay_nights': 2,
+            }],
+            'return_flight': {
+                'flight_number': 'FR 456',
+                'departure_time': '2026-05-22T18:00:00',
+                'arrival_time': '2026-05-22T20:00:00',
+                'price': 20.0, 'currency': 'EUR',
+            },
+            'total_price': 45.0, 'currency': 'EUR',
+        }, {
+            'origin': 'VLC',
+            'legs': [{
+                'destination': 'PMO', 'destination_name': 'Palermo',
+                'country': 'Italy', 'flight_number': 'FR 789',
+                'departure_time': '2026-05-20T06:00:00',
+                'arrival_time': '2026-05-20T08:30:00',
+                'price': 30.0, 'currency': 'EUR', 'stay_nights': 3,
+            }],
+            'return_flight': {
+                'flight_number': 'FR 790',
+                'departure_time': '2026-05-23T22:00:00',
+                'arrival_time': '2026-05-24T00:30:00',
+                'price': 32.5, 'currency': 'EUR',
+            },
+            'total_price': 62.5, 'currency': 'EUR',
+        }]
 
         from app import app
         app.config['TESTING'] = True
@@ -83,7 +116,7 @@ class TestPageLoad:
     def test_page_loads(self, flask_server, page):
         page.goto(BASE)
         assert page.title() != ''
-        assert 'Ryanair' in page.title()
+        assert 'Ryanair' in page.title() and 'FlyNomad' in page.title()
 
     def test_has_search_form(self, flask_server, page):
         page.goto(BASE)
@@ -108,11 +141,11 @@ class TestPageLoad:
         assert page.locator('#date-prev').is_visible()
         assert page.locator('#date-next').is_visible()
 
-    def test_has_submit_button(self, flask_server, page):
+    def test_has_search_button(self, flask_server, page):
         page.goto(BASE)
-        btn = page.locator('button[type=submit]')
+        btn = page.locator('#btn-nomad-start')
         assert btn.is_visible()
-        assert 'Найти' in btn.text_content()
+        assert btn.text_content().strip() != ''
 
 
 class TestSEO:
@@ -137,7 +170,7 @@ class TestSEO:
     def test_has_lang_attribute(self, flask_server, page):
         page.goto(BASE)
         lang = page.locator('html').get_attribute('lang')
-        assert lang == 'ru'
+        assert lang in ('en', 'es', 'it', 'fr', 'pt', 'de', 'ru')
 
     def test_has_canonical(self, flask_server, page):
         page.goto(BASE)
@@ -167,53 +200,40 @@ class TestSemanticHTML:
 
 
 class TestSearch:
-    """Тесты поиска рейсов."""
+    """Тесты поиска маршрутов."""
 
     def test_search_shows_results(self, flask_server, page):
         page.goto(BASE)
         page.locator('#departure-date').fill('2026-05-20')
-        page.locator('#nights').fill('1')
-        page.locator('button[type=submit]').click()
-        # Ждём результатов (HTMX обновление)
-        page.wait_for_selector('.results-table, .flight-card', timeout=10000)
-        # Проверяем результаты в таблице
-        rows = page.locator('.results-table tbody tr')
-        assert rows.count() == 2
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.route-card', timeout=15000)
+        cards = page.locator('.route-card')
+        assert cards.count() == 2
 
     def test_search_shows_price(self, flask_server, page):
         page.goto(BASE)
         page.locator('#departure-date').fill('2026-05-20')
-        page.locator('#nights').fill('1')
-        page.locator('button[type=submit]').click()
-        page.wait_for_selector('.price-cell', timeout=10000)
-        first_price = page.locator('.price-cell').first
-        assert '45.0' in first_price.text_content()
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.route-price', timeout=15000)
+        first_price = page.locator('.route-price').first
+        assert '45' in first_price.text_content()
 
     def test_search_shows_destination(self, flask_server, page):
         page.goto(BASE)
         page.locator('#departure-date').fill('2026-05-20')
-        page.locator('#nights').fill('1')
-        page.locator('button[type=submit]').click()
-        page.wait_for_selector('.dest-name', timeout=10000)
-        assert 'Milan Bergamo' in page.locator('.dest-name').first.text_content()
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.route-card', timeout=15000)
+        first_card = page.locator('.route-card').first.text_content()
+        assert 'Milan Bergamo' in first_card or 'BGY' in first_card
 
-    def test_search_shows_freshness_badge(self, flask_server, page):
+    def test_search_shows_return_flight(self, flask_server, page):
         page.goto(BASE)
         page.locator('#departure-date').fill('2026-05-20')
-        page.locator('#nights').fill('1')
-        page.locator('button[type=submit]').click()
-        page.wait_for_selector('.badge', timeout=10000)
-        badge = page.locator('.badge')
-        assert badge.count() >= 1
-
-    def test_url_updates_after_search(self, flask_server, page):
-        page.goto(BASE)
-        page.locator('#departure-date').fill('2026-05-20')
-        page.locator('#nights').fill('1')
-        page.locator('button[type=submit]').click()
-        page.wait_for_selector('.results-table', timeout=10000)
-        assert 'mode=regular' in page.url
-        assert 'departure_date=2026-05-20' in page.url
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.route-card', timeout=15000)
+        # Return flight icon should be present
+        ret_icons = page.locator('.leg-icon.ret')
+        assert ret_icons.count() >= 1
 
 
 class TestMultiSelect:
@@ -262,8 +282,7 @@ class TestDateNavigation:
         date_input = page.locator('#departure-date')
         original = date_input.input_value()
         page.locator('#date-next').click()
-        # HTMX триггерит submit, ждём обновления URL
-        page.wait_for_timeout(2000)
+        page.wait_for_timeout(500)
         new_date = date_input.input_value()
         assert new_date != original
 
@@ -272,7 +291,7 @@ class TestDateNavigation:
         date_input = page.locator('#departure-date')
         original = date_input.input_value()
         page.locator('#date-prev').click()
-        page.wait_for_timeout(2000)
+        page.wait_for_timeout(500)
         new_date = date_input.input_value()
         assert new_date != original
 
@@ -319,69 +338,118 @@ class TestAccessibility:
         assert live.count() >= 1
 
 
-class TestSorting:
-    """Тесты сортировки таблицы."""
+class TestRouteResults:
+    """Тесты отображения результатов маршрутов."""
 
-    def test_sort_by_price(self, flask_server, page):
+    def test_routes_sorted_by_price(self, flask_server, page):
         page.goto(BASE)
         page.locator('#departure-date').fill('2026-05-20')
-        page.locator('#nights').fill('1')
-        page.locator('button[type=submit]').click()
-        page.wait_for_selector('.results-table', timeout=10000)
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.route-card', timeout=15000)
 
-        # Кликаем на колонку цены (уже отсортирована asc, клик → desc)
-        price_header = page.locator('th[data-col="2"]')
-        price_header.click()
+        prices = page.locator('.route-price')
+        first_price = prices.nth(0).text_content()
+        second_price = prices.nth(1).text_content()
+        assert '45' in first_price
+        assert '62' in second_price
 
-        # Первая цена теперь должна быть 62.5 (desc)
-        first_price = page.locator('.price-cell').first.text_content()
-        assert '62.5' in first_price
-
-    def test_sort_by_destination(self, flask_server, page):
+    def test_route_has_legs(self, flask_server, page):
         page.goto(BASE)
         page.locator('#departure-date').fill('2026-05-20')
-        page.locator('#nights').fill('1')
-        page.locator('button[type=submit]').click()
-        page.wait_for_selector('.results-table', timeout=10000)
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.route-card', timeout=15000)
 
-        dest_header = page.locator('th[data-col="1"]')
-        dest_header.click()
-
-        first_dest = page.locator('.dest-name').first.text_content()
-        assert 'Milan' in first_dest
+        legs = page.locator('.route-leg')
+        # 2 routes x 2 legs each (outbound + return) = 4
+        assert legs.count() == 4
 
 
 class TestMobileLayout:
     """Тесты мобильной верстки."""
 
-    def test_cards_visible_on_mobile(self, flask_server, page):
+    def test_routes_visible_on_mobile(self, flask_server, page):
         page.set_viewport_size({'width': 375, 'height': 812})
         page.goto(BASE)
         page.locator('#departure-date').fill('2026-05-20')
-        page.locator('#nights').fill('1')
-        page.locator('button[type=submit]').click()
-        page.wait_for_selector('.flight-card', timeout=10000)
-        cards = page.locator('.flight-card')
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.route-card', timeout=15000)
+        cards = page.locator('.route-card')
         assert cards.count() == 2
-        # Таблица скрыта на мобильном
-        table_wrap = page.locator('.results-table-wrap')
-        assert not table_wrap.is_visible()
 
-    def test_table_visible_on_desktop(self, flask_server, page):
+    def test_routes_visible_on_desktop(self, flask_server, page):
         page.set_viewport_size({'width': 1280, 'height': 800})
         page.goto(BASE)
         page.locator('#departure-date').fill('2026-05-20')
-        page.locator('#nights').fill('1')
-        page.locator('button[type=submit]').click()
-        page.wait_for_selector('.results-table', timeout=10000)
-        assert page.locator('.results-table-wrap').is_visible()
-        # Карточки скрыты на десктопе
-        assert not page.locator('.results-cards').is_visible()
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.route-card', timeout=15000)
+        assert page.locator('.route-card').count() == 2
 
     def test_form_usable_on_mobile(self, flask_server, page):
         page.set_viewport_size({'width': 375, 'height': 812})
         page.goto(BASE)
-        # Все основные элементы формы видны
         assert page.locator('#origin-select').is_visible()
         assert page.locator('#departure-date').is_visible()
-        assert page.locator('button[type=submit]').is_visible()
+        assert page.locator('#btn-nomad-start').is_visible()
+
+
+class TestI18n:
+    """Тесты интернационализации."""
+
+    def test_default_language_is_english(self, flask_server, page):
+        page.goto(BASE)
+        assert page.locator('html').get_attribute('lang') == 'en'
+        assert 'Search routes' in page.locator('#btn-nomad-start').text_content()
+
+    def test_switch_to_russian(self, flask_server, page):
+        page.goto(f'{BASE}/?lang=ru')
+        assert page.locator('html').get_attribute('lang') == 'ru'
+        assert 'маршруты' in page.locator('#btn-nomad-start').text_content().lower()
+
+    def test_switch_to_spanish(self, flask_server, page):
+        page.goto(f'{BASE}/?lang=es')
+        assert page.locator('html').get_attribute('lang') == 'es'
+        assert 'Buscar rutas' in page.locator('#btn-nomad-start').text_content()
+
+    def test_switch_to_german(self, flask_server, page):
+        page.goto(f'{BASE}/?lang=de')
+        assert page.locator('html').get_attribute('lang') == 'de'
+        assert 'Routen suchen' in page.locator('#btn-nomad-start').text_content()
+
+    def test_switch_to_italian(self, flask_server, page):
+        page.goto(f'{BASE}/?lang=it')
+        assert page.locator('html').get_attribute('lang') == 'it'
+        assert 'Cerca percorsi' in page.locator('#btn-nomad-start').text_content()
+
+    def test_switch_to_french(self, flask_server, page):
+        page.goto(f'{BASE}/?lang=fr')
+        assert page.locator('html').get_attribute('lang') == 'fr'
+        assert 'Rechercher' in page.locator('#btn-nomad-start').text_content()
+
+    def test_switch_to_portuguese(self, flask_server, page):
+        page.goto(f'{BASE}/?lang=pt')
+        assert page.locator('html').get_attribute('lang') == 'pt'
+        assert 'Pesquisar rotas' in page.locator('#btn-nomad-start').text_content()
+
+    def test_lang_switcher_visible(self, flask_server, page):
+        page.goto(BASE)
+        links = page.locator('.lang-link')
+        assert links.count() == 7
+
+    def test_lang_preserved_on_page(self, flask_server, page):
+        page.goto(f'{BASE}/?lang=ru')
+        assert page.locator('html').get_attribute('lang') == 'ru'
+        # Button should be in Russian
+        assert 'маршруты' in page.locator('#btn-nomad-start').text_content().lower()
+
+    def test_invalid_lang_falls_back_to_english(self, flask_server, page):
+        page.goto(f'{BASE}/?lang=xx')
+        assert page.locator('html').get_attribute('lang') == 'en'
+
+    def test_results_translated(self, flask_server, page):
+        page.goto(f'{BASE}/?lang=es')
+        page.locator('#departure-date').fill('2026-05-20')
+        page.locator('#btn-nomad-start').click()
+        page.wait_for_selector('.route-card', timeout=15000)
+        # Results header should be in Spanish
+        header = page.locator('.results-count').text_content()
+        assert 'rutas' in header.lower()
