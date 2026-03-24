@@ -781,6 +781,12 @@
         .leg-from-to { font-weight: 600; min-width: 120px; }
         .leg-details { color: var(--text-secondary); font-size: 13px; }
         .leg-price { font-weight: 600; color: var(--brand); margin-left: auto; white-space: nowrap; }
+        .leg-book {
+            padding: 4px 12px; font-size: 12px; font-weight: 600; font-family: var(--font);
+            background: var(--brand); color: #fff; border-radius: 4px; text-decoration: none;
+            white-space: nowrap; transition: filter var(--transition); flex-shrink: 0;
+        }
+        .leg-book:hover { filter: brightness(1.2); }
         .route-stay { padding: 4px 0 4px 44px; font-size: 12px; color: var(--text-muted); }
 
         @media (max-width: 768px) {
@@ -1200,6 +1206,19 @@
             // ── Nomad auto-routes ──
             function fmtDate(iso) { return new Date(iso).toLocaleDateString('{{ lang }}', { day: '2-digit', month: '2-digit' }); }
             function fmtTime(iso) { return iso.slice(11, 16); }
+            function buildRyanairUrl(origin, dest, date) {
+                const d = date.slice(0, 10);
+                const p = new URLSearchParams({
+                    adults: 1, teens: 0, children: 0, infants: 0,
+                    dateOut: d, dateIn: '', isConnectedFlight: 'false', isReturn: 'false',
+                    discount: 0, promoCode: '', originIata: origin, destinationIata: dest,
+                    tpAdults: 1, tpTeens: 0, tpChildren: 0, tpInfants: 0,
+                    tpStartDate: d, tpEndDate: '', tpDiscount: 0, tpPromoCode: '',
+                    tpOriginIata: origin, tpDestinationIata: dest,
+                });
+                return 'https://www.ryanair.com/gb/en/trip/flights/select?' + p.toString();
+            }
+
             function fmtStay(n) {
                 // I18N.nomad_stay = ["1 night", "2 nights", "5 nights"] — pick form & replace number
                 const form = n === 1 ? 0 : (n < 5 ? 1 : 2);
@@ -1260,6 +1279,7 @@
                         legs += `<div class="leg-from-to">${prev} &rarr; ${leg.destination}</div>`;
                         legs += `<div class="leg-details">${fmtDate(leg.departure_time)} ${fmtTime(leg.departure_time)}&rarr;${fmtTime(leg.arrival_time)} <span style="font-family:var(--font-mono);font-size:11px">${leg.flight_number}</span></div>`;
                         legs += `<div class="leg-price">${leg.price} ${leg.currency}</div>`;
+                        legs += `<a class="leg-book" href="${buildRyanairUrl(prev, leg.destination, leg.departure_time)}" target="_blank" rel="noopener">Book</a>`;
                         legs += `</div>`;
 
                         // Stay info
@@ -1276,6 +1296,7 @@
                     legs += `<div class="leg-from-to">${lastDest} &rarr; ${origin}</div>`;
                     legs += `<div class="leg-details">${fmtDate(rf.departure_time)} ${fmtTime(rf.departure_time)}&rarr;${fmtTime(rf.arrival_time)} <span style="font-family:var(--font-mono);font-size:11px">${rf.flight_number}</span></div>`;
                     legs += `<div class="leg-price">${rf.price} ${rf.currency}</div>`;
+                    legs += `<a class="leg-book" href="${buildRyanairUrl(lastDest, origin, rf.departure_time)}" target="_blank" rel="noopener">Book</a>`;
                     legs += `</div>`;
 
                     const cities = route.legs.map(l => l.destination_name).join(' &rarr; ');
