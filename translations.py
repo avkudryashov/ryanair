@@ -263,7 +263,7 @@ TRANSLATIONS = {
         'fr': lambda n: 'nuit' if n == 1 else 'nuits',
         'pt': lambda n: 'noite' if n == 1 else 'noites',
         'de': lambda n: 'Nacht' if n == 1 else 'Nächte',
-        'ru': lambda n: 'ночь' if n == 1 else ('ночи' if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14 else 'ночей'),
+        'ru': lambda n: 'ночь' if n % 10 == 1 and n % 100 != 11 else ('ночи' if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14 else 'ночей'),
     },
     'hours_short': {
         'en': 'h',

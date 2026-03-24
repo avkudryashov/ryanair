@@ -194,3 +194,85 @@ class TestFreshnessIndicator:
         html = resp.data.decode()
         assert '15' in html
         assert 'stale' in html
+
+
+# ── P2: API Endpoints ──────────────────────────────────
+
+class TestNomadRoutesEndpoint:
+    def test_nomad_routes_returns_json(self, client):
+        c, mock = client
+        mock.search_nomad_routes.return_value = []
+        resp = c.get('/api/nomad/routes?origin=VLC&departure_date=2026-05-19&hops=1')
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert 'routes' in data
+
+    def test_nomad_routes_missing_params_400(self, client):
+        c, _ = client
+        resp = c.get('/api/nomad/routes')
+        assert resp.status_code == 400
+
+    def test_nomad_routes_passes_hops(self, client):
+        c, mock = client
+        mock.search_nomad_routes.return_value = []
+        c.get('/api/nomad/routes?origin=VLC&departure_date=2026-05-19&hops=3')
+        kwargs = mock.search_nomad_routes.call_args[1]
+        assert kwargs['hops'] == 3
+
+    def test_nomad_routes_default_nights(self, client):
+        c, mock = client
+        mock.search_nomad_routes.return_value = []
+        c.get('/api/nomad/routes?origin=VLC&departure_date=2026-05-19')
+        kwargs = mock.search_nomad_routes.call_args[1]
+        assert kwargs['nights_per_city'] == [1, 2, 3]
+
+
+class TestNomadReturnEndpoint:
+    def test_nomad_return_returns_flights(self, client):
+        c, mock = client
+        mock.search_nomad_return.return_value = [{'flight_number': 'FR 1', 'price': 20}]
+        resp = c.get('/api/nomad/return?origin=PMO&destination=VLC&date_from=2026-05-23&date_to=2026-05-23&max_price=100')
+        assert resp.status_code == 200
+        data = resp.get_json()
+        assert 'flights' in data
+
+    def test_nomad_return_missing_params_400(self, client):
+        c, _ = client
+        resp = c.get('/api/nomad/return?origin=PMO')
+        assert resp.status_code == 400
+
+
+class TestWarmEndpoint:
+    def test_warm_valid_origin_200(self, client):
+        c, _ = client
+        resp = c.post('/api/warm', json={'origin': 'VLC'})
+        assert resp.status_code == 200
+
+    def test_warm_invalid_origin_400(self, client):
+        c, _ = client
+        resp = c.post('/api/warm', json={'origin': 'X'})
+        assert resp.status_code == 400
+
+
+class TestInputValidation:
+    def test_empty_origin_handled(self, client):
+        c, mock = client
+        mock.search_nomad_routes.return_value = []
+        resp = c.get('/api/nomad/routes?origin=&departure_date=2026-05-19')
+        assert resp.status_code == 400
+
+    def test_invalid_date_handled(self, client):
+        c, mock = client
+        mock.search_nomad_routes.side_effect = ValueError("Invalid date")
+        resp = c.get('/api/nomad/routes?origin=VLC&departure_date=not-a-date')
+        assert resp.status_code == 500
+
+
+class TestDestinationOverride:
+    def test_search_with_destination_override(self, client):
+        c, mock = client
+        mock.search_flights.return_value = []
+        mock.get_data_freshness.return_value = {'from_cache': False, 'stale': False, 'age_minutes': 0}
+        c.get('/?mode=regular&departure_date=2026-05-20&nights=1&destination=PMO')
+        kwargs = mock.search_flights.call_args[1]
+        assert kwargs['destination_override'] == 'PMO'

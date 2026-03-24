@@ -376,3 +376,262 @@ class TestBuildDateBatches:
         # Проверяем покрытие всех дат
         for batch_date, flex in batches:
             assert flex <= searcher.MAX_FLEX_DAYS
+
+
+# ── P1: Nomad Routes Algorithm ──────────────────────────────
+
+def make_returnable_destinations(codes_with_info):
+    """Helper: dict of {code: {name, country}} for returnable set."""
+    return {c: {'name': n, 'country': co} for c, n, co in codes_with_info}
+
+
+class TestReturnableSet:
+    """P1.1: Returnable set calculation."""
+
+    def test_returnable_set_computed_from_origin(self, searcher):
+        """_fetch_destinations called with origin to compute returnable airports."""
+        dests_origin = {'PMO': {'name': 'Palermo', 'country': 'Italy'},
+                        'BGY': {'name': 'Milan Bergamo', 'country': 'Italy'}}
+        flight_pmo = make_flight('VLC', 'PMO', 'Palermo', '2026-05-19T10:00:00', '2026-05-19T12:00:00', 20.0, 'FR 100')
+        flight_ret = make_flight('PMO', 'VLC', 'Valencia', '2026-05-21T18:00:00', '2026-05-21T20:00:00', 20.0, 'FR 200')
+
+        fetch_dest_calls = []
+        async def mock_fetch_dest(client, params):
+            fetch_dest_calls.append(params['departureAirportIataCode'])
+            return dests_origin
+
+        with patch.object(searcher, '_fetch_destinations', side_effect=mock_fetch_dest), \
+             patch.object(searcher, '_fetch_flights', new_callable=AsyncMock, return_value=[flight_pmo, flight_ret]):
+            searcher.origin = 'VLC'
+            results = searcher.search_nomad_routes(
+                origin='VLC', departure_date='2026-05-19', hops=1,
+                nights_per_city=[2], max_price_per_leg=100, top_n=10,
+            )
+
+        assert 'VLC' in fetch_dest_calls, "Must call _fetch_destinations with origin for returnable set"
+
+    def test_returnable_set_filters_excluded(self, searcher):
+        """Excluded airports/countries removed from returnable set."""
+        dests = {'PMO': {'name': 'Palermo', 'country': 'Italy'},
+                 'AGP': {'name': 'Malaga', 'country': 'Spain'}}
+        flight_pmo = make_flight('VLC', 'PMO', 'Palermo', '2026-05-19T10:00:00', '2026-05-19T12:00:00', 20.0, 'FR 100')
+        flight_ret = make_flight('PMO', 'VLC', 'Valencia', '2026-05-21T18:00:00', '2026-05-21T20:00:00', 20.0, 'FR 200')
+
+        with patch.object(searcher, '_fetch_destinations', new_callable=AsyncMock, return_value=dests), \
+             patch.object(searcher, '_fetch_flights', new_callable=AsyncMock, return_value=[flight_pmo, flight_ret]):
+            searcher.origin = 'VLC'
+            results = searcher.search_nomad_routes(
+                origin='VLC', departure_date='2026-05-19', hops=1,
+                nights_per_city=[2], max_price_per_leg=100, top_n=10,
+                excluded_countries=['Spain'],
+            )
+
+        dest_codes = [r['legs'][0]['destination'] for r in results]
+        assert 'AGP' not in dest_codes, "Excluded country airports should be filtered"
+
+    def test_empty_returnable_set_returns_empty(self, searcher):
+        """No returnable airports → empty results."""
+        with patch.object(searcher, '_fetch_destinations', new_callable=AsyncMock, return_value={}):
+            searcher.origin = 'VLC'
+            results = searcher.search_nomad_routes(
+                origin='VLC', departure_date='2026-05-19', hops=1,
+                nights_per_city=[2], max_price_per_leg=100, top_n=10,
+            )
+        assert results == []
+
+
+class TestNomadRoutesSingleHop:
+    """P1.2: Single-hop (hops=1) — round trip."""
+
+    def _run_single_hop(self, searcher, nights=[2]):
+        dests = {'PMO': {'name': 'Palermo', 'country': 'Italy'},
+                 'BGY': {'name': 'Milan Bergamo', 'country': 'Italy'}}
+        outbound = make_flight('VLC', 'PMO', 'Palermo', '2026-05-19T10:00:00', '2026-05-19T12:00:00', 20.0, 'FR 100')
+        ret_flight = make_flight('PMO', 'VLC', 'Valencia', '2026-05-21T18:00:00', '2026-05-21T20:00:00', 15.0, 'FR 200')
+
+        with patch.object(searcher, '_fetch_destinations', new_callable=AsyncMock, return_value=dests), \
+             patch.object(searcher, '_fetch_flights', new_callable=AsyncMock, return_value=[outbound, ret_flight]):
+            searcher.origin = 'VLC'
+            return searcher.search_nomad_routes(
+                origin='VLC', departure_date='2026-05-19', hops=1,
+                nights_per_city=nights, max_price_per_leg=100, top_n=10,
+            )
+
+    def test_single_hop_includes_return_flight(self, searcher):
+        results = self._run_single_hop(searcher)
+        assert len(results) > 0
+        assert 'return_flight' in results[0]
+        assert results[0]['return_flight']['flight_number'] == 'FR 200'
+
+    def test_single_hop_total_price_includes_return(self, searcher):
+        results = self._run_single_hop(searcher)
+        assert results[0]['total_price'] == 35.0  # 20 outbound + 15 return
+
+    def test_single_hop_route_structure(self, searcher):
+        results = self._run_single_hop(searcher)
+        r = results[0]
+        assert r['origin'] == 'VLC'
+        assert len(r['legs']) == 1
+        assert r['legs'][0]['destination'] == 'PMO'
+
+
+class TestNomadRoutesMultiHop:
+    """P1.3: Multi-hop (hops=2)."""
+
+    def _setup_two_hop(self, searcher):
+        """Sets up: VLC → PMO → BGY → VLC."""
+        dests_vlc = {'PMO': {'name': 'Palermo', 'country': 'Italy'},
+                     'BGY': {'name': 'Milan Bergamo', 'country': 'Italy'}}
+        dests_pmo = {'BGY': {'name': 'Milan Bergamo', 'country': 'Italy'},
+                     'CTA': {'name': 'Catania', 'country': 'Italy'}}
+
+        hop1 = make_flight('VLC', 'PMO', 'Palermo', '2026-05-19T10:00:00', '2026-05-19T12:00:00', 15.0, 'FR 100')
+        hop2_bgy = make_flight('PMO', 'BGY', 'Milan Bergamo', '2026-05-21T10:00:00', '2026-05-21T12:00:00', 20.0, 'FR 200')
+        hop2_cta = make_flight('PMO', 'CTA', 'Catania', '2026-05-21T10:00:00', '2026-05-21T11:00:00', 10.0, 'FR 300')
+        ret_bgy = make_flight('BGY', 'VLC', 'Valencia', '2026-05-23T18:00:00', '2026-05-23T20:00:00', 25.0, 'FR 400')
+        ret_cta = make_flight('CTA', 'VLC', 'Valencia', '2026-05-23T18:00:00', '2026-05-23T20:00:00', 30.0, 'FR 500')
+
+        call_count = [0]
+        async def mock_fetch_dest(client, params):
+            call_count[0] += 1
+            airport = params['departureAirportIataCode']
+            if airport == 'VLC':
+                return dests_vlc
+            elif airport == 'PMO':
+                return dests_pmo
+            return {}
+
+        async def mock_fetch_flights(client, sem, origin, dest, name, date_out, flex_days_out=0):
+            if origin == 'VLC' and dest == 'PMO':
+                return [hop1]
+            if origin == 'PMO' and dest == 'BGY':
+                return [hop2_bgy]
+            if origin == 'PMO' and dest == 'CTA':
+                return [hop2_cta]
+            if origin == 'BGY' and dest == 'VLC':
+                return [ret_bgy]
+            if origin == 'CTA' and dest == 'VLC':
+                return [ret_cta]
+            return []
+
+        with patch.object(searcher, '_fetch_destinations', side_effect=mock_fetch_dest), \
+             patch.object(searcher, '_fetch_flights', side_effect=mock_fetch_flights):
+            searcher.origin = 'VLC'
+            return searcher.search_nomad_routes(
+                origin='VLC', departure_date='2026-05-19', hops=2,
+                nights_per_city=[2], max_price_per_leg=100, top_n=10,
+            )
+
+    def test_two_hop_builds_correct_route(self, searcher):
+        results = self._setup_two_hop(searcher)
+        assert len(results) > 0
+        r = results[0]
+        assert len(r['legs']) == 2
+        assert r['origin'] == 'VLC'
+        assert r['return_flight'] is not None
+
+    def test_two_hop_last_hop_filtered_by_returnable(self, searcher):
+        """Second city must be in returnable_set (airports VLC flies to)."""
+        results = self._setup_two_hop(searcher)
+        for r in results:
+            last_dest = r['legs'][-1]['destination']
+            # Both BGY and CTA are in returnable set (VLC flies to both)
+            assert last_dest in ('BGY', 'CTA')
+
+    def test_two_hop_no_revisit(self, searcher):
+        """Can't visit same city twice."""
+        results = self._setup_two_hop(searcher)
+        for r in results:
+            cities = [l['destination'] for l in r['legs']]
+            assert len(cities) == len(set(cities)), f"Duplicate city in route: {cities}"
+
+    def test_two_hop_stay_nights_assigned(self, searcher):
+        results = self._setup_two_hop(searcher)
+        for r in results:
+            for leg in r['legs']:
+                assert 'stay_nights' in leg
+                assert leg['stay_nights'] > 0
+
+
+class TestNomadReturnValidation:
+    """P1.4: Return flight validation."""
+
+    def test_no_return_flight_discards_route(self, searcher):
+        """Route to airport with no return should be discarded."""
+        dests = {'PMO': {'name': 'Palermo', 'country': 'Italy'}}
+        outbound = make_flight('VLC', 'PMO', 'Palermo', '2026-05-19T10:00:00', '2026-05-19T12:00:00', 20.0, 'FR 100')
+
+        call_count = [0]
+        async def mock_fetch_flights(client, sem, origin, dest, name, date_out, flex_days_out=0):
+            call_count[0] += 1
+            if origin == 'VLC':
+                return [outbound]
+            return []  # No return flights
+
+        with patch.object(searcher, '_fetch_destinations', new_callable=AsyncMock, return_value=dests), \
+             patch.object(searcher, '_fetch_flights', side_effect=mock_fetch_flights):
+            searcher.origin = 'VLC'
+            results = searcher.search_nomad_routes(
+                origin='VLC', departure_date='2026-05-19', hops=1,
+                nights_per_city=[2], max_price_per_leg=100, top_n=10,
+            )
+        assert results == [], "Routes without return should be discarded"
+
+    def test_cheapest_return_selected(self, searcher):
+        dests = {'PMO': {'name': 'Palermo', 'country': 'Italy'}}
+        outbound = make_flight('VLC', 'PMO', 'Palermo', '2026-05-19T10:00:00', '2026-05-19T12:00:00', 20.0, 'FR 100')
+        ret_cheap = make_flight('PMO', 'VLC', 'Valencia', '2026-05-21T18:00:00', '2026-05-21T20:00:00', 10.0, 'FR 200')
+        ret_expensive = make_flight('PMO', 'VLC', 'Valencia', '2026-05-21T20:00:00', '2026-05-21T22:00:00', 50.0, 'FR 201')
+
+        async def mock_fetch_flights(client, sem, origin, dest, name, date_out, flex_days_out=0):
+            if origin == 'VLC':
+                return [outbound]
+            return [ret_cheap, ret_expensive]
+
+        with patch.object(searcher, '_fetch_destinations', new_callable=AsyncMock, return_value=dests), \
+             patch.object(searcher, '_fetch_flights', side_effect=mock_fetch_flights):
+            searcher.origin = 'VLC'
+            results = searcher.search_nomad_routes(
+                origin='VLC', departure_date='2026-05-19', hops=1,
+                nights_per_city=[2], max_price_per_leg=100, top_n=10,
+            )
+        assert results[0]['return_flight']['price'] == 10.0
+
+    def test_routes_sorted_by_total_price(self, searcher):
+        dests = {'PMO': {'name': 'Palermo', 'country': 'Italy'},
+                 'BGY': {'name': 'Milan Bergamo', 'country': 'Italy'}}
+        out_pmo = make_flight('VLC', 'PMO', 'Palermo', '2026-05-19T10:00:00', '2026-05-19T12:00:00', 30.0, 'FR 100')
+        out_bgy = make_flight('VLC', 'BGY', 'Milan Bergamo', '2026-05-19T08:00:00', '2026-05-19T10:00:00', 10.0, 'FR 101')
+        ret_pmo = make_flight('PMO', 'VLC', 'Valencia', '2026-05-21T18:00:00', '2026-05-21T20:00:00', 20.0, 'FR 200')
+        ret_bgy = make_flight('BGY', 'VLC', 'Valencia', '2026-05-21T18:00:00', '2026-05-21T20:00:00', 15.0, 'FR 201')
+
+        async def mock_fetch_flights(client, sem, origin, dest, name, date_out, flex_days_out=0):
+            if origin == 'VLC' and dest == 'PMO': return [out_pmo]
+            if origin == 'VLC' and dest == 'BGY': return [out_bgy]
+            if origin == 'PMO': return [ret_pmo]
+            if origin == 'BGY': return [ret_bgy]
+            return []
+
+        with patch.object(searcher, '_fetch_destinations', new_callable=AsyncMock, return_value=dests), \
+             patch.object(searcher, '_fetch_flights', side_effect=mock_fetch_flights):
+            searcher.origin = 'VLC'
+            results = searcher.search_nomad_routes(
+                origin='VLC', departure_date='2026-05-19', hops=1,
+                nights_per_city=[2], max_price_per_leg=100, top_n=10,
+            )
+        prices = [r['total_price'] for r in results]
+        assert prices == sorted(prices), f"Routes should be sorted by price, got {prices}"
+
+
+class TestNomadRoutesEdgeCases:
+    """P1.5: Edge cases."""
+
+    def test_hops_clamped_to_1_4(self, searcher):
+        """hops=0 → 1, hops=5 → 4."""
+        with patch.object(searcher, '_fetch_destinations', new_callable=AsyncMock, return_value={}):
+            searcher.origin = 'VLC'
+            # hops=0 should be clamped to 1 and return empty (no destinations)
+            r1 = searcher.search_nomad_routes(origin='VLC', departure_date='2026-05-19', hops=0)
+            r2 = searcher.search_nomad_routes(origin='VLC', departure_date='2026-05-19', hops=5)
+        assert r1 == []
+        assert r2 == []

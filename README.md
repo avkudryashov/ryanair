@@ -2,7 +2,7 @@
 
 Cheap flights & multi-city trip planner for Ryanair. Search round trips or build multi-city routes with automatic return — all powered by Ryanair API.
 
-![Screenshot](screenshot.png?v=2)
+![Screenshot](screenshot.png?v=3)
 
 ## Features
 
@@ -14,6 +14,7 @@ Cheap flights & multi-city trip planner for Ryanair. Search round trips or build
 - Stale-While-Revalidate caching (diskcache/SQLite)
 - 7 languages: EN, ES, IT, FR, PT, DE, RU
 - Dark mode, responsive layout
+- **Book on Ryanair** — direct booking links for each flight leg
 - Geolocation — auto-select nearest airport
 
 ## How it works
