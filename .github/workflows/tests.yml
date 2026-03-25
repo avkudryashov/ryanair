@@ -14,8 +14,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements.txt pytest
-      - run: pytest tests/test_app.py tests/test_nomad.py tests/test_translations.py -v
+      - run: pip install -r requirements.txt pytest httpx
+      - run: pytest tests/test_app.py tests/test_nomad.py tests/test_translations.py tests/test_flight_search.py tests/test_cache.py -v
 
   e2e:
     runs-on: ubuntu-latest

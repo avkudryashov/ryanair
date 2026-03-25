@@ -103,5 +103,5 @@ def searcher(tmp_cache_dir):
     """FlightSearcher с чистым временным кэшем."""
     s = FlightSearcher()
     s._cache.close()
-    s._cache = diskcache.Cache(tmp_cache_dir)
+    s._cache.disk = diskcache.Cache(tmp_cache_dir)
     return s

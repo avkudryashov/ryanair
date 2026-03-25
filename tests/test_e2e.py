@@ -22,13 +22,13 @@ class TestAirportsE2E:
     def test_get_airports_returns_list(self, searcher):
         airports = searcher.get_airports()
         assert len(airports) > 100
-        assert all('code' in ap for ap in airports)
-        assert all('name' in ap for ap in airports)
-        assert all('country' in ap for ap in airports)
+        assert all(hasattr(ap, 'code') for ap in airports)
+        assert all(hasattr(ap, 'name') for ap in airports)
+        assert all(hasattr(ap, 'country') for ap in airports)
 
     def test_airports_contain_vlc(self, searcher):
         airports = searcher.get_airports()
-        codes = {ap['code'] for ap in airports}
+        codes = {ap.code for ap in airports}
         assert 'VLC' in codes
 
     def test_airports_cached_on_second_call(self, searcher):
@@ -50,12 +50,10 @@ class TestDestinationsE2E:
         destinations = searcher.get_available_destinations(date_from, date_to)
         assert len(destinations) > 0
 
-        # Каждое направление имеет цену и название
         for code, info in destinations.items():
-            assert len(code) == 3  # IATA код
-            assert 'price' in info
-            assert 'name' in info
-            assert info['price'] > 0
+            assert len(code) == 3  # IATA code
+            assert info.price > 0
+            assert info.name
 
     def test_destinations_exclude_uk(self, searcher):
         """UK и Ireland должны быть отфильтрованы (config excluded_countries)."""
@@ -64,7 +62,7 @@ class TestDestinationsE2E:
         date_to = (today + timedelta(days=14)).isoformat()
 
         destinations = searcher.get_available_destinations(date_from, date_to)
-        countries = {info.get('country') for info in destinations.values()}
+        countries = {info.country for info in destinations.values()}
         assert 'United Kingdom' not in countries
         assert 'Ireland' not in countries
 
@@ -80,15 +78,12 @@ class TestSearchFlightsE2E:
             flex_days_override=2,
             max_price_override=150
         )
-        # Может быть 0 если реально ничего нет, но формат должен быть правильным
         for trip in trips:
-            assert 'totalPrice' in trip
-            assert 'outbound' in trip
-            assert 'inbound' in trip
-            assert 'nights' in trip
-            assert trip['nights'] in [1, 2]
-            assert trip['totalPrice'] <= 150
-            assert trip['totalPrice'] > 0
+            assert trip.nights in [1, 2]
+            assert trip.total_price <= 150
+            assert trip.total_price > 0
+            assert trip.outbound is not None
+            assert trip.inbound is not None
 
     def test_search_with_country_exclusion(self, searcher):
         """Поиск с исключением страны — направления этой страны не должны попасть."""
@@ -102,10 +97,8 @@ class TestSearchFlightsE2E:
             max_price_override=150
         )
         for trip in trips:
-            dest = trip['outbound']['destination']
-            # Не должно быть испанских аэропортов (AGP, BCN, MAD etc.)
-            # Проверяем что origin != destination (нет полётов в тот же город)
-            assert dest != searcher.origin
+            dest = trip.outbound.destination
+            assert dest != searcher.config['origin_airport']
 
     def test_search_with_airport_exclusion(self, searcher):
         today = date.today()
@@ -118,7 +111,7 @@ class TestSearchFlightsE2E:
             max_price_override=150
         )
         for trip in trips:
-            assert trip['outbound']['destination'] not in ['BGY', 'MXP']
+            assert trip.outbound.destination not in ['BGY', 'MXP']
 
     def test_search_respects_max_price(self, searcher):
         today = date.today()
@@ -130,7 +123,7 @@ class TestSearchFlightsE2E:
             max_price_override=40
         )
         for trip in trips:
-            assert trip['totalPrice'] <= 40
+            assert trip.total_price <= 40
 
     def test_search_flex_4_days_works(self, searcher):
         """±4 дня — ранее сломанный кейс. FlexDaysOut > 6 должен батчиться."""
@@ -168,8 +161,8 @@ class TestSearchFlightsE2E:
             max_price_override=150
         )
         for trip in trips:
-            out_arrival = trip['outbound']['arrivalTime'].date()
-            in_departure = trip['inbound']['departureTime'].date()
+            out_arrival = trip.outbound.arrival_time.date()
+            in_departure = trip.inbound.departure_time.date()
             calendar_nights = (in_departure - out_arrival).days
             assert calendar_nights == 2, f"Expected 2 nights, got {calendar_nights}"
 
